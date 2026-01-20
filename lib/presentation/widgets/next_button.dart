@@ -16,7 +16,7 @@ class NextButton extends StatelessWidget {
           button: true,
           label: 'Load another random image',
           child: ElevatedButton(
-            onPressed: state.isLoading ? null : () => context.read<ImageCubit>().loadImage(),
+            onPressed: state.isLoading ? null : () => context.read<ImageCubit>().fetchRandomImage(),
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
               backgroundColor: textColor.withValues(alpha: 0.15),

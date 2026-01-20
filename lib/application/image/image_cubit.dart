@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/repositories/image_repository.dart';
 import '../../domain/services/color_extractor.dart';
@@ -10,25 +9,18 @@ class ImageCubit extends Cubit<ImageState> {
   final ImageRepository repository;
   final ColorExtractor colorExtractor;
 
-  Future<void> loadImage() async {
+  Future<void> fetchRandomImage() async {
     emit(state.copyWith(isLoading: true));
 
     final result = await repository.getRandomImage();
 
     result.fold(
       (failure) => emit(state.copyWith(isLoading: false, errorMessage: failure.message)),
-      (image) => emit(state.copyWith(isLoading: false, imageBytes: image.bytes)),
+      (image) async {
+        emit(state.copyWith(imageBytes: image.bytes));
+        final extractedColors = await colorExtractor.extractColors(image.bytes);
+        emit(ImageState(imageBytes: image.bytes, extractedColors: extractedColors));
+      },
     );
-  }
-
-  Future<void> updateColorsFromImage(ImageProvider imageProvider) async {
-    if (state.imageBytes == null || state.isLoading) {
-      return;
-    }
-
-    try {
-      final extractedColors = await colorExtractor.extractColors(imageProvider);
-      emit(state.copyWith(extractedColors: extractedColors));
-    } catch (_) {}
   }
 }

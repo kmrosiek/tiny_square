@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:palette_generator_master/palette_generator_master.dart';
 import '../../domain/entities/extracted_colors.dart';
@@ -7,7 +8,9 @@ class ColorExtractorImpl implements ColorExtractor {
   const ColorExtractorImpl();
 
   @override
-  Future<ExtractedColors> extractColors(ImageProvider imageProvider) async {
+  Future<ExtractedColors> extractColors(Uint8List imageBytes) async {
+    final imageProvider = MemoryImage(imageBytes);
+
     final palette = await PaletteGeneratorMaster.fromImageProvider(
       imageProvider,
       size: const Size(100, 100),
