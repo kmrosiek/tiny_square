@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tiny_square/presentation/widgets/animated_loading_border/animated_loading_border.dart';
 import 'package:tiny_square/presentation/widgets/image_or_error_message.dart';
 import 'package:tiny_square/presentation/widgets/theme_toggle.dart';
 import '../application/image/image_cubit.dart';
@@ -41,10 +42,14 @@ class Homepage extends StatelessWidget {
                       children: [
                         Expanded(
                           child: Center(
-                            child: ImageOrErrorMessage(
+                            child: AnimatedLoadingBorder(
                               isLoading: state.isLoading,
-                              errorMessage: state.errorMessage,
-                              imageBytes: state.imageBytes,
+                              borderColor: textColor,
+                              child: ImageOrErrorMessage(
+                                isLoading: state.isLoading,
+                                errorMessage: state.errorMessage,
+                                imageBytes: state.imageBytes,
+                              ),
                             ),
                           ),
                         ),
