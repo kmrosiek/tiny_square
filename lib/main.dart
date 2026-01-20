@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tiny_square/application/theme/app_theme.dart';
+import 'package:tiny_square/application/theme/theme_cubit.dart';
 import 'package:tiny_square/presentation/homepage_provider.dart';
 import 'core/di/injection.dart';
 
@@ -14,12 +16,19 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Tiny Square',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.light,
-      darkTheme: AppTheme.dark,
-      home: const HomepageProvider(),
+    return BlocProvider(
+      create: (_) => getIt<ThemeCubit>(),
+      child: BlocBuilder<ThemeCubit, ThemeMode>(
+        builder: (context, themeMode) {
+          return MaterialApp(
+            title: 'Tiny Square',
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.light,
+            darkTheme: AppTheme.dark,
+            home: const HomepageProvider(),
+          );
+        },
+      ),
     );
   }
 }
