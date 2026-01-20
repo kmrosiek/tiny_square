@@ -1,40 +1,56 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../application/image/image_cubit.dart';
-import '../../application/image/image_state.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class NextButton extends StatelessWidget {
-  const NextButton({required this.textColor, super.key});
+  const NextButton({
+    super.key,
+    required this.onPressed,
+    required this.isLoading,
+    required this.backgroundColor,
+    required this.foregroundColor,
+  });
 
-  final Color textColor;
+  final VoidCallback onPressed;
+  final bool isLoading;
+  final Color backgroundColor;
+  final Color foregroundColor;
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ImageCubit, ImageState>(
-      builder: (context, state) {
-        return Semantics(
-          button: true,
-          label: 'Load another random image',
+    return Semantics(
+      button: true,
+      enabled: !isLoading,
+      label: isLoading ? 'Loading new image' : 'Load another image',
+      child: SizedBox(
+        width: double.infinity,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 56),
           child: ElevatedButton(
-            onPressed: state.isLoading ? null : () => context.read<ImageCubit>().fetchRandomImage(),
+            onPressed: isLoading ? null : onPressed,
             style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-              backgroundColor: textColor.withValues(alpha: 0.15),
-              foregroundColor: textColor,
+              backgroundColor: backgroundColor,
+              foregroundColor: foregroundColor,
+              disabledBackgroundColor: backgroundColor,
+              disabledForegroundColor: foregroundColor,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             ),
-            child: state.isLoading
-                ? SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(textColor)),
+            child: isLoading
+                ? ExcludeSemantics(
+                    child: SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: LoadingAnimationWidget.staggeredDotsWave(color: foregroundColor, size: 24),
+                    ),
                   )
                 : Text(
                     'Another',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: textColor),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600, color: foregroundColor),
                   ),
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 }

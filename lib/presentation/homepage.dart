@@ -41,7 +41,12 @@ class Homepage extends StatelessWidget {
                     children: [
                       Expanded(child: Center(child: _buildImageSection(state))),
                       const SizedBox(height: 24),
-                      NextButton(textColor: textColor),
+                      NextButton(
+                        onPressed: () => context.read<ImageCubit>().fetchRandomImage(),
+                        isLoading: state.isLoading,
+                        backgroundColor: backgroundColor,
+                        foregroundColor: textColor,
+                      ),
                     ],
                   ),
                 ),
