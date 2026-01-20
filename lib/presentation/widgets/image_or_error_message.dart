@@ -19,13 +19,18 @@ class ImageOrErrorMessage extends StatelessWidget {
             ? const SizedBox.shrink()
             : errorMessage != null
             ? ErrorMessage(message: errorMessage!)
-            : Image.memory(
-                imageBytes!,
-                key: ValueKey(imageBytes!.hashCode),
-                fit: BoxFit.cover,
-                width: double.infinity,
-                height: double.infinity,
-                gaplessPlayback: true,
+            : Semantics(
+                label: 'Random image',
+                child: Center(
+                  child: Image.memory(
+                    imageBytes!,
+                    key: ValueKey(imageBytes!.hashCode),
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                    height: double.infinity,
+                    gaplessPlayback: true,
+                  ),
+                ),
               ),
       ),
     );
