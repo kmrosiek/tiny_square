@@ -16,20 +16,17 @@ class ImageOrErrorMessage extends StatelessWidget {
       child: AnimatedSwitcher(
         duration: const Duration(milliseconds: 500),
         child: isLoading
-            ? const SizedBox.shrink()
+            ? const SizedBox.shrink(key: ValueKey('loading'))
             : errorMessage != null
             ? ErrorMessage(message: errorMessage!)
-            : Semantics(
-                label: 'Random image',
-                child: Center(
-                  child: Image.memory(
-                    imageBytes!,
-                    key: ValueKey(imageBytes!.hashCode),
-                    fit: BoxFit.cover,
-                    width: double.infinity,
-                    height: double.infinity,
-                    gaplessPlayback: true,
-                  ),
+            : Center(
+                key: const ValueKey('image_container'),
+                child: Image.memory(
+                  imageBytes!,
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                  height: double.infinity,
+                  gaplessPlayback: true,
                 ),
               ),
       ),
