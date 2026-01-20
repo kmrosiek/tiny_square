@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tiny_square/presentation/widgets/theme_toggle.dart';
 import '../application/image/image_cubit.dart';
 import '../application/image/image_state.dart';
 import 'widgets/error_display.dart';
@@ -11,10 +12,10 @@ class Homepage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-
     return BlocBuilder<ImageCubit, ImageState>(
       builder: (context, state) {
+        final theme = Theme.of(context);
+        final isDarkMode = Theme.of(context).brightness == Brightness.dark;
         final colors = state.extractedColors;
         final hasColors = colors != null;
 
@@ -29,28 +30,30 @@ class Homepage extends StatelessWidget {
         return AnimatedContainer(
           duration: const Duration(milliseconds: 500),
           curve: Curves.easeInOut,
-          color: backgroundColor,
-          child: Scaffold(
-            backgroundColor: Colors.transparent,
-            body: SafeArea(
-              child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Expanded(child: Center(child: _buildImageSection(state))),
-                      const SizedBox(height: 24),
-                      NextButton(
-                        onPressed: () => context.read<ImageCubit>().fetchRandomImage(),
-                        isLoading: state.isLoading,
-                        backgroundColor: backgroundColor,
-                        foregroundColor: textColor,
-                      ),
-                    ],
+          color: theme.scaffoldBackgroundColor,
+          child: SafeArea(
+            child: Stack(
+              children: [
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Expanded(child: Center(child: _buildImageSection(state))),
+                        const SizedBox(height: 24),
+                        NextButton(
+                          onPressed: () => context.read<ImageCubit>().fetchRandomImage(),
+                          isLoading: state.isLoading,
+                          backgroundColor: backgroundColor,
+                          foregroundColor: textColor,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
+                Positioned(top: 8, right: 8, child: ThemeToggle(iconColor: textColor)),
+              ],
             ),
           ),
         );

@@ -25,6 +25,7 @@ class App extends StatelessWidget {
             debugShowCheckedModeBanner: false,
             theme: AppTheme.light,
             darkTheme: AppTheme.dark,
+            themeMode: themeMode,
             home: const HomepageProvider(),
           );
         },
