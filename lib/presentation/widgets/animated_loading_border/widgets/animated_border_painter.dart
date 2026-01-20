@@ -3,7 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 class AnimatedBorderPainter extends CustomPainter {
-  AnimatedBorderPainter({
+  const AnimatedBorderPainter({
     required this.progress,
     required this.color,
     required this.opacity,
