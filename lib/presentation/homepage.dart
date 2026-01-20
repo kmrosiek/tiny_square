@@ -11,12 +11,20 @@ class Homepage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return BlocBuilder<ImageCubit, ImageState>(
       builder: (context, state) {
-        final hasImage = state.imageUrl != null;
-        final backgroundColor = hasImage ? state.backgroundColor : Theme.of(context).scaffoldBackgroundColor;
+        final colors = state.extractedColors;
+        final hasColors = colors != null;
 
-        final textColor = hasImage ? state.textColor : Theme.of(context).colorScheme.onSurface;
+        final backgroundColor = hasColors
+            ? (isDarkMode ? colors.darkBackground : colors.lightBackground) ?? Theme.of(context).scaffoldBackgroundColor
+            : Theme.of(context).scaffoldBackgroundColor;
+
+        final textColor = hasColors
+            ? (isDarkMode ? colors.darkTextColor : colors.lightTextColor) ?? Theme.of(context).colorScheme.onSurface
+            : Theme.of(context).colorScheme.onSurface;
 
         return AnimatedContainer(
           duration: const Duration(milliseconds: 500),

@@ -15,14 +15,7 @@ class ImageCubit extends Cubit<ImageState> {
 
     try {
       final image = await repository.getRandomImage();
-      emit(
-        state.copyWith(
-          isLoading: false,
-          imageUrl: image.url,
-          backgroundColor: Colors.grey.shade800,
-          textColor: Colors.white,
-        ),
-      );
+      emit(state.copyWith(isLoading: false, imageUrl: image.url));
     } catch (e) {
       emit(state.copyWith(isLoading: false, errorMessage: e.toString()));
     }
@@ -34,16 +27,8 @@ class ImageCubit extends Cubit<ImageState> {
     }
 
     try {
-      final dominantColor = await colorExtractor.extractDominantColor(imageProvider);
-      final backgroundColor = dominantColor ?? Colors.grey.shade800;
-      final textColor = _getContrastingTextColor(backgroundColor);
-
-      emit(state.copyWith(backgroundColor: backgroundColor, textColor: textColor));
+      final extractedColors = await colorExtractor.extractColors(imageProvider);
+      emit(state.copyWith(extractedColors: extractedColors));
     } catch (_) {}
-  }
-
-  Color _getContrastingTextColor(Color backgroundColor) {
-    final luminance = backgroundColor.computeLuminance();
-    return luminance > 0.5 ? Colors.black : Colors.white;
   }
 }
