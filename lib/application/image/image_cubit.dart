@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:palette_generator_master/palette_generator_master.dart';
 import '../../domain/repositories/image_repository.dart';
+import '../../domain/services/color_extractor.dart';
 import 'image_state.dart';
 
 class ImageCubit extends Cubit<ImageState> {
-  ImageCubit({required this.repository}) : super(const ImageState());
+  ImageCubit({required this.repository, required this.colorExtractor}) : super(const ImageState());
 
   final ImageRepository repository;
+  final ColorExtractor colorExtractor;
 
   Future<void> loadImage() async {
     emit(state.copyWith(isLoading: true));
@@ -33,14 +34,8 @@ class ImageCubit extends Cubit<ImageState> {
     }
 
     try {
-      final paletteGenerator = await PaletteGeneratorMaster.fromImageProvider(
-        imageProvider,
-        size: const Size(100, 100),
-      );
-
-      final backgroundColor =
-          paletteGenerator.dominantColor?.color ?? paletteGenerator.vibrantColor?.color ?? Colors.grey.shade800;
-
+      final dominantColor = await colorExtractor.extractDominantColor(imageProvider);
+      final backgroundColor = dominantColor ?? Colors.grey.shade800;
       final textColor = _getContrastingTextColor(backgroundColor);
 
       emit(state.copyWith(backgroundColor: backgroundColor, textColor: textColor));
