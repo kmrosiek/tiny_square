@@ -84,6 +84,3 @@ Profiling was performed using Flutter DevTools. No jank frames or performance is
 ### Leak Tracking
 
 Used `leak_tracker` package to monitor for memory leaks during development. No leaks were detected.
-
-<!-- TODO: Add leak tracking video -->
-[Leak Tracking Video Placeholder]
