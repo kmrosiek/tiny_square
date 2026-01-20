@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tiny_square/presentation/widgets/image_or_error_message.dart';
 import 'package:tiny_square/presentation/widgets/theme_toggle.dart';
 import '../application/image/image_cubit.dart';
 import '../application/image/image_state.dart';
-import 'widgets/error_message.dart';
-import 'widgets/image_display.dart';
 import 'widgets/next_button.dart';
 
 class Homepage extends StatelessWidget {
@@ -40,7 +39,15 @@ class Homepage extends StatelessWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Expanded(child: Center(child: _buildImageSection(state))),
+                        Expanded(
+                          child: Center(
+                            child: ImageOrErrorMessage(
+                              isLoading: state.isLoading,
+                              errorMessage: state.errorMessage,
+                              imageBytes: state.imageBytes,
+                            ),
+                          ),
+                        ),
                         const SizedBox(height: 24),
                         NextButton(
                           onPressed: () => context.read<ImageCubit>().fetchRandomImage(),
@@ -59,21 +66,5 @@ class Homepage extends StatelessWidget {
         );
       },
     );
-  }
-
-  Widget _buildImageSection(ImageState state) {
-    if (state.isLoading && state.imageBytes == null) {
-      return const CircularProgressIndicator();
-    }
-
-    if (state.errorMessage != null && state.imageBytes == null) {
-      return ErrorMessage(message: state.errorMessage!);
-    }
-
-    if (state.imageBytes != null) {
-      return ImageDisplay(imageBytes: state.imageBytes!);
-    }
-
-    return const SizedBox.shrink();
   }
 }
