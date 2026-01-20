@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:tiny_square/presentation/consts/homepage_contants.dart';
+import 'package:tiny_square/presentation/consts/homepage_constants.dart';
 
 /// A builder that provides an infinitely repeating progress value from 0.0 to 1.0.
 /// Includes a delayed stop mechanism when [isActive] becomes false.

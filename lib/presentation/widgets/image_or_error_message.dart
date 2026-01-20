@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:tiny_square/presentation/consts/homepage_contants.dart';
+import 'package:tiny_square/presentation/consts/homepage_constants.dart';
 import 'package:tiny_square/presentation/widgets/error_message.dart';
 
 class ImageOrErrorMessage extends StatelessWidget {

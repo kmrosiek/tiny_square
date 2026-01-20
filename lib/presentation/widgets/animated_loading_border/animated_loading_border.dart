@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tiny_square/presentation/consts/homepage_contants.dart';
+import 'package:tiny_square/presentation/consts/homepage_constants.dart';
 import 'package:tiny_square/presentation/widgets/animated_loading_border/widgets/animated_border_painter.dart';
 import 'package:tiny_square/presentation/widgets/animated_loading_border/widgets/infinite_progress_builder.dart';
 
