@@ -13,12 +13,12 @@ class ImageCubit extends Cubit<ImageState> {
   Future<void> loadImage() async {
     emit(state.copyWith(isLoading: true));
 
-    try {
-      final image = await repository.getRandomImage();
-      emit(state.copyWith(isLoading: false, imageBytes: image.bytes));
-    } catch (e) {
-      emit(state.copyWith(isLoading: false, errorMessage: e.toString()));
-    }
+    final result = await repository.getRandomImage();
+
+    result.fold(
+      (failure) => emit(state.copyWith(isLoading: false, errorMessage: failure.message)),
+      (image) => emit(state.copyWith(isLoading: false, imageBytes: image.bytes)),
+    );
   }
 
   Future<void> updateColorsFromImage(ImageProvider imageProvider) async {
