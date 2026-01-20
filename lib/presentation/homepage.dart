@@ -54,7 +54,7 @@ class Homepage extends StatelessWidget {
                     ),
                   ),
                 ),
-                Positioned(top: 8, right: 8, child: ThemeToggle(iconColor: homepageColors.themeToggle)),
+                Positioned(top: 8, right: 8, child: ThemeToggle(iconColor: homepageColors.tintedPrimary)),
               ],
             ),
           ),

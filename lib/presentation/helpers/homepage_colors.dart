@@ -2,12 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tiny_square/domain/entities/extracted_colors.dart';
 
 class HomepageColors {
-  const HomepageColors._({
-    required this.background,
-    required this.tintedPrimary,
-    required this.onTintedPrimary,
-    required this.themeToggle,
-  });
+  const HomepageColors._({required this.background, required this.tintedPrimary, required this.onTintedPrimary});
 
   factory HomepageColors.fromContext(BuildContext context, ExtractedColors? extractedColors) {
     final theme = Theme.of(context);
@@ -23,18 +18,10 @@ class HomepageColors {
         ? background
         : Color.lerp(background, Colors.black, 0.7)!;
 
-    final themeToggle = brightness == Brightness.dark ? tintedPrimary : onTintedPrimary;
-
-    return HomepageColors._(
-      background: background,
-      tintedPrimary: tintedPrimary,
-      onTintedPrimary: onTintedPrimary,
-      themeToggle: themeToggle,
-    );
+    return HomepageColors._(background: background, tintedPrimary: tintedPrimary, onTintedPrimary: onTintedPrimary);
   }
 
   final Color background;
   final Color tintedPrimary;
   final Color onTintedPrimary;
-  final Color themeToggle;
 }
