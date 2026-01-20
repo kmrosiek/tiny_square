@@ -12,13 +12,22 @@ class ImageOrErrorMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 500),
-      child: isLoading
-          ? const SizedBox.shrink()
-          : errorMessage != null
-          ? ErrorMessage(message: errorMessage!)
-          : Image.memory(imageBytes!, key: ValueKey(imageBytes!.hashCode), fit: BoxFit.cover, gaplessPlayback: true),
+    return SizedBox.expand(
+      child: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 500),
+        child: isLoading
+            ? const SizedBox.shrink()
+            : errorMessage != null
+            ? ErrorMessage(message: errorMessage!)
+            : Image.memory(
+                imageBytes!,
+                key: ValueKey(imageBytes!.hashCode),
+                fit: BoxFit.cover,
+                width: double.infinity,
+                height: double.infinity,
+                gaplessPlayback: true,
+              ),
+      ),
     );
   }
 }
