@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tiny_square/presentation/helpers/homepage_colors.dart';
 import 'package:tiny_square/presentation/widgets/animated_loading_border/animated_loading_border.dart';
 import 'package:tiny_square/presentation/widgets/image_or_error_message.dart';
 import 'package:tiny_square/presentation/widgets/theme_toggle.dart';
@@ -14,23 +15,12 @@ class Homepage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<ImageCubit, ImageState>(
       builder: (context, state) {
-        final theme = Theme.of(context);
-        final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-        final colors = state.extractedColors;
-        final hasColors = colors != null;
-
-        final backgroundColor = hasColors
-            ? (isDarkMode ? colors.darkBackground : colors.lightBackground) ?? Theme.of(context).scaffoldBackgroundColor
-            : Theme.of(context).scaffoldBackgroundColor;
-
-        final textColor = hasColors
-            ? (isDarkMode ? colors.darkTextColor : colors.lightTextColor) ?? Theme.of(context).colorScheme.onSurface
-            : Theme.of(context).colorScheme.onSurface;
+        final homepageColors = HomepageColors.fromContext(context, state.extractedColors);
 
         return AnimatedContainer(
           duration: const Duration(milliseconds: 500),
           curve: Curves.easeInOut,
-          color: theme.scaffoldBackgroundColor,
+          color: homepageColors.background,
           child: SafeArea(
             child: Stack(
               children: [
@@ -44,7 +34,7 @@ class Homepage extends StatelessWidget {
                           child: Center(
                             child: AnimatedLoadingBorder(
                               isLoading: state.isLoading,
-                              borderColor: textColor,
+                              borderColor: homepageColors.tintedPrimary,
                               child: ImageOrErrorMessage(
                                 isLoading: state.isLoading,
                                 errorMessage: state.errorMessage,
@@ -57,14 +47,14 @@ class Homepage extends StatelessWidget {
                         NextButton(
                           onPressed: () => context.read<ImageCubit>().fetchRandomImage(),
                           isLoading: state.isLoading,
-                          backgroundColor: backgroundColor,
-                          foregroundColor: textColor,
+                          backgroundColor: homepageColors.tintedPrimary,
+                          foregroundColor: homepageColors.onTintedPrimary,
                         ),
                       ],
                     ),
                   ),
                 ),
-                Positioned(top: 8, right: 8, child: ThemeToggle(iconColor: textColor)),
+                Positioned(top: 8, right: 8, child: ThemeToggle(iconColor: homepageColors.themeToggle)),
               ],
             ),
           ),
