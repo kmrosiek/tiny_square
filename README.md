@@ -63,8 +63,7 @@ flutter run
 
 Profiling was performed using Flutter DevTools. No jank frames or performance issues were detected.
 
-<!-- TODO: Add profiling screenshot -->
-[Profiling Screenshot Placeholder]
+![Profiling preview](readme_assets/profiling.gif)
 
 ### Leak Tracking
 
