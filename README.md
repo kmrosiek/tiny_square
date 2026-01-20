@@ -54,8 +54,7 @@ flutter run
 
 ### Semantics
 
-<!-- TODO: Add semantics screenshot -->
-[Semantics Screenshot Placeholder]
+![Semantic](readme_assets/semantics.PNG).
 
 ### Profiling
 
