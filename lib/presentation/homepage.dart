@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tiny_square/presentation/consts/homepage_contants.dart';
 import 'package:tiny_square/presentation/helpers/homepage_colors.dart';
 import 'package:tiny_square/presentation/widgets/animated_loading_border/animated_loading_border.dart';
 import 'package:tiny_square/presentation/widgets/image_or_error_message.dart';
@@ -18,7 +19,7 @@ class Homepage extends StatelessWidget {
         final homepageColors = HomepageColors.fromContext(context, state.extractedColors);
 
         return AnimatedContainer(
-          duration: const Duration(milliseconds: 500),
+          duration: HomepageConstants.fadeInOutDuration,
           curve: Curves.easeInOut,
           color: homepageColors.background,
           child: SafeArea(
