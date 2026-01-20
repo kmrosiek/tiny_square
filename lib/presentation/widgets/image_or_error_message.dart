@@ -21,13 +21,7 @@ class ImageOrErrorMessage extends StatelessWidget {
             ? ErrorMessage(message: errorMessage!)
             : Center(
                 key: const ValueKey('image_container'),
-                child: Image.memory(
-                  imageBytes!,
-                  fit: BoxFit.cover,
-                  width: double.infinity,
-                  height: double.infinity,
-                  gaplessPlayback: true,
-                ),
+                child: Image.memory(imageBytes!, fit: BoxFit.cover, width: double.infinity, height: double.infinity),
               ),
       ),
     );
