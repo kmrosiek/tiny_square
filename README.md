@@ -43,7 +43,7 @@ lib/
 
 - **BLoC/Cubit** for state management (flutter_bloc)
 - **Dependency Injection** via GetIt
-- **Functional error handling** with `dartz` package (`Either<Failure, T>` for results, `Option<T>` for nullable values)
+- **Functional error handling** with `dartz` package (`Either<Failure, T>` for results)
 - **SOLID principles** throughout (abstractions injected, single responsibility per class)
 
 ### Theming
