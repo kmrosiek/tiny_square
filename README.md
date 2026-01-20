@@ -4,14 +4,6 @@ A Flutter app that fetches random images and displays them as centered squares w
 
 ## Demo
 
-<!-- TODO: Add demo video -->
-[![Watch the video](https://github.com/kmrosiek/tiny_square/blob/feat/readme/readme_assets/demo.mp4)](https://github.com/kmrosiek/tiny_square/blob/feat/readme/readme_assets/demo.mp4)
-
-
-![App preview](readme_assets/demo.gif)
-
-![Error preview](readme_assets/error.gif)
-
 <table style="width: 100%;">
   <tr>
     <td>
