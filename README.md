@@ -10,6 +10,8 @@ A Flutter app that fetches random images and displays them as centered squares w
 
 ![App preview](readme_assets/demo.gif)
 
+![Error preview](readme_assets/error.gif)
+
 
 ## Features
 
@@ -59,10 +61,14 @@ flutter run
 
 ### Profiling
 
+Profiling was performed using Flutter DevTools. No jank frames or performance issues were detected.
+
 <!-- TODO: Add profiling screenshot -->
 [Profiling Screenshot Placeholder]
 
 ### Leak Tracking
+
+Used `leak_tracker` to monitor for memory leaks during development. No leaks were detected.
 
 <!-- TODO: Add leak tracking video -->
 [Leak Tracking Video Placeholder]
