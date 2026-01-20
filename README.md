@@ -56,6 +56,15 @@ Colors are extracted from images using `palette_generator_master` to derive domi
 flutter pub get
 flutter run
 ```
+
+## Testing
+
+This project does not currently include automated tests. In a production environment, the following tests should be implemented:
+
+- **Unit tests** for Cubits, repositories, and domain logic
+- **Widget tests** for UI components and user interactions
+- **Integration tests** for end-to-end user flows
+
 ## Screenshots
 
 ### Semantics
@@ -68,7 +77,7 @@ flutter run
 
 Profiling was performed using Flutter DevTools. No jank frames or performance issues were detected.
 
-![Profiling preview](readme_assets/profiling.gif)
+![Profiling preview](readme_assets/performance.gif)
 
 ### Leak Tracking
 
