@@ -7,22 +7,29 @@ import 'image_state.dart';
 class ImageCubit extends Cubit<ImageState> {
   final ImageRepository repository;
 
-  ImageCubit({required this.repository}) : super(const ImageInitial());
+  ImageCubit({required this.repository}) : super(const ImageState());
 
   Future<void> loadImage() async {
-    emit(const ImageLoading());
+    emit(state.copyWith(isLoading: true, errorMessage: null));
 
     try {
       final image = await repository.getRandomImage();
-      emit(ImageLoaded(imageUrl: image.url, backgroundColor: Colors.grey.shade800, textColor: Colors.white));
+      emit(state.copyWith(
+        isLoading: false,
+        imageUrl: image.url,
+        backgroundColor: Colors.grey.shade800,
+        textColor: Colors.white,
+      ));
     } catch (e) {
-      emit(ImageError(message: e.toString()));
+      emit(state.copyWith(
+        isLoading: false,
+        errorMessage: e.toString(),
+      ));
     }
   }
 
   Future<void> updateColorsFromImage(ImageProvider imageProvider) async {
-    final currentState = state;
-    if (currentState is! ImageLoaded) return;
+    if (state.imageUrl == null || state.isLoading) return;
 
     try {
       final paletteGenerator = await PaletteGeneratorMaster.fromImageProvider(
@@ -31,12 +38,16 @@ class ImageCubit extends Cubit<ImageState> {
         maximumColorCount: 16,
       );
 
-      final backgroundColor =
-          paletteGenerator.dominantColor?.color ?? paletteGenerator.vibrantColor?.color ?? Colors.grey.shade800;
+      final backgroundColor = paletteGenerator.dominantColor?.color ??
+          paletteGenerator.vibrantColor?.color ??
+          Colors.grey.shade800;
 
       final textColor = _getContrastingTextColor(backgroundColor);
 
-      emit(ImageLoaded(imageUrl: currentState.imageUrl, backgroundColor: backgroundColor, textColor: textColor));
+      emit(state.copyWith(
+        backgroundColor: backgroundColor,
+        textColor: textColor,
+      ));
     } catch (_) {}
   }
 

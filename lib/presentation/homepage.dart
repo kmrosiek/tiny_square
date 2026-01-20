@@ -11,15 +11,14 @@ class Homepage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<ImageCubit, ImageState>(
       builder: (context, state) {
-        final backgroundColor = switch (state) {
-          ImageLoaded(:final backgroundColor) => backgroundColor,
-          _ => Theme.of(context).scaffoldBackgroundColor,
-        };
+        final hasImage = state.imageUrl != null;
+        final backgroundColor = hasImage
+            ? state.backgroundColor
+            : Theme.of(context).scaffoldBackgroundColor;
 
-        final textColor = switch (state) {
-          ImageLoaded(:final textColor) => textColor,
-          _ => Theme.of(context).colorScheme.onSurface,
-        };
+        final textColor = hasImage
+            ? state.textColor
+            : Theme.of(context).colorScheme.onSurface;
 
         return AnimatedContainer(
           duration: const Duration(milliseconds: 500),
@@ -53,28 +52,33 @@ class Homepage extends StatelessWidget {
   }
 
   Widget _buildImageSection(BuildContext context, ImageState state) {
-    return switch (state) {
-      ImageInitial() => const SizedBox.shrink(),
-      ImageLoading() => const _LoadingIndicator(),
-      ImageLoaded(:final imageUrl) => _ImageDisplay(imageUrl: imageUrl),
-      ImageError(:final message) => _ErrorDisplay(message: message),
-    };
+    if (state.isLoading && state.imageUrl == null) {
+      return const _LoadingIndicator();
+    }
+
+    if (state.errorMessage != null && state.imageUrl == null) {
+      return _ErrorDisplay(message: state.errorMessage!);
+    }
+
+    if (state.imageUrl != null) {
+      return _ImageDisplay(imageUrl: state.imageUrl!);
+    }
+
+    return const SizedBox.shrink();
   }
 
   Widget _buildButton(BuildContext context, ImageState state, Color textColor) {
-    final isLoading = state is ImageLoading;
-
     return Semantics(
       button: true,
       label: 'Load another random image',
       child: ElevatedButton(
-        onPressed: isLoading ? null : () => context.read<ImageCubit>().loadImage(),
+        onPressed: state.isLoading ? null : () => context.read<ImageCubit>().loadImage(),
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
           backgroundColor: textColor.withValues(alpha: 0.15),
           foregroundColor: textColor,
         ),
-        child: isLoading
+        child: state.isLoading
             ? SizedBox(
                 width: 20,
                 height: 20,

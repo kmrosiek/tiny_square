@@ -1,31 +1,33 @@
 import 'package:flutter/material.dart';
 
-sealed class ImageState {
-  const ImageState();
-}
-
-class ImageInitial extends ImageState {
-  const ImageInitial();
-}
-
-class ImageLoading extends ImageState {
-  const ImageLoading();
-}
-
-class ImageLoaded extends ImageState {
-  final String imageUrl;
+class ImageState {
+  final bool isLoading;
+  final String? imageUrl;
   final Color backgroundColor;
   final Color textColor;
+  final String? errorMessage;
 
-  const ImageLoaded({
-    required this.imageUrl,
-    required this.backgroundColor,
-    required this.textColor,
+  const ImageState({
+    this.isLoading = false,
+    this.imageUrl,
+    this.backgroundColor = Colors.grey,
+    this.textColor = Colors.white,
+    this.errorMessage,
   });
-}
 
-class ImageError extends ImageState {
-  final String message;
-
-  const ImageError({required this.message});
+  ImageState copyWith({
+    bool? isLoading,
+    String? imageUrl,
+    Color? backgroundColor,
+    Color? textColor,
+    String? errorMessage,
+  }) {
+    return ImageState(
+      isLoading: isLoading ?? this.isLoading,
+      imageUrl: imageUrl ?? this.imageUrl,
+      backgroundColor: backgroundColor ?? this.backgroundColor,
+      textColor: textColor ?? this.textColor,
+      errorMessage: errorMessage ?? this.errorMessage,
+    );
+  }
 }
