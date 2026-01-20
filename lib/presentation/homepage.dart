@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tiny_square/presentation/widgets/theme_toggle.dart';
 import '../application/image/image_cubit.dart';
 import '../application/image/image_state.dart';
-import 'widgets/error_display.dart';
+import 'widgets/error_message.dart';
 import 'widgets/image_display.dart';
 import 'widgets/next_button.dart';
 
@@ -67,7 +67,7 @@ class Homepage extends StatelessWidget {
     }
 
     if (state.errorMessage != null && state.imageBytes == null) {
-      return ErrorDisplay(message: state.errorMessage!);
+      return ErrorMessage(message: state.errorMessage!);
     }
 
     if (state.imageBytes != null) {

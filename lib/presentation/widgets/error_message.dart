@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class ErrorDisplay extends StatelessWidget {
-  const ErrorDisplay({required this.message, super.key});
+class ErrorMessage extends StatelessWidget {
+  const ErrorMessage({required this.message, super.key});
 
   final String message;
 
@@ -12,7 +12,7 @@ class ErrorDisplay extends StatelessWidget {
       children: [
         Icon(Icons.error_outline, size: 64, color: Theme.of(context).colorScheme.error),
         const SizedBox(height: 16),
-        Text('Failed to load image', style: Theme.of(context).textTheme.titleMedium),
+        Text('Something went wrong', style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: 8),
         Text(message, textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodySmall),
       ],
