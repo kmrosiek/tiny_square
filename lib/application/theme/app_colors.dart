@@ -13,7 +13,7 @@ class _LightAppColors implements AppColors {
   const _LightAppColors();
 
   @override
-  Color get primary => const Color(0xFFFFFDD0);
+  Color get primary => const Color(0xFFF4C430);
 
   @override
   Color get onPrimary => Colors.black;
