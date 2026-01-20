@@ -5,6 +5,9 @@ A Flutter app that fetches random images and displays them as centered squares w
 ## Demo
 
 <!-- TODO: Add demo video -->
+[![Watch the video](https://github.com/kmrosiek/tiny_square/blob/feat/readme/readme_assets/demo.mp4)](https://github.com/kmrosiek/tiny_square/blob/feat/readme/readme_assets/demo.mp4)
+
+
 <div align="center">
   <video src="https://github.com/kmrosiek/tiny_square/blob/feat/readme/assets/demo.mp4" width="80%" autoplay loop muted playsinline></video>
 </div>
@@ -55,7 +58,7 @@ flutter run
 ### Semantics
 
 <div align="center">
-  <img src="readme_assets/semantics.PNG" alt="App Screenshot" width="300">
+  <img src="readme_assets/semantics.PNG" alt="Semantics Screenshot" width="300">
 </div>
 
 ### Profiling
