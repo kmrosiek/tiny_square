@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tiny_square/application/theme/app_theme.dart';
 import 'package:tiny_square/presentation/homepage_provider.dart';
 import 'core/di/injection.dart';
 
@@ -16,11 +17,8 @@ class App extends StatelessWidget {
     return MaterialApp(
       title: 'Tiny Square',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple), useMaterial3: true),
-      darkTheme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple, brightness: Brightness.dark),
-        useMaterial3: true,
-      ),
+      theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
       home: const HomepageProvider(),
     );
   }
