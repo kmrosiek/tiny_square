@@ -5,7 +5,10 @@ A Flutter app that fetches random images and displays them as centered squares w
 ## Demo
 
 <!-- TODO: Add demo video -->
-[Demo Video Placeholder]
+<div align="center">
+  <video src="assets/demo.mp4" width="80%" autoplay loop muted playsinline></video>
+</div>
+<video src="assets/demo_480.mov" autoplay loop muted playsinline width="100%"></video>
 
 ## Features
 
