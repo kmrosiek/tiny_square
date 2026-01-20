@@ -4,8 +4,19 @@ A Flutter app that fetches random images and displays them as centered squares w
 
 ## Demo
 
-<!-- TODO: Add demo video -->
-[Demo Video Placeholder]
+<table style="width: 100%;">
+  <tr>
+    <td>
+      <p align="center"><b>App Preview</b></p>
+      <img src="readme_assets/demo.gif" alt="App preview" width="100%">
+    </td>
+    <td>
+      <p align="center"><b>Error Preview</b></p>
+      <img src="readme_assets/error.gif" alt="Error preview" width="100%">
+    </td>
+  </tr>
+</table>
+
 
 ## Features
 
@@ -45,19 +56,31 @@ Colors are extracted from images using `palette_generator_master` to derive domi
 flutter pub get
 flutter run
 ```
+
+## Testing
+
+This project does not currently include automated tests. In a production environment, the following tests should be implemented:
+
+- **Unit tests** for Cubits, repositories, and domain logic
+- **Widget tests** for UI components and user interactions
+- **Integration tests** for end-to-end user flows
+
 ## Screenshots
 
 ### Semantics
 
-<!-- TODO: Add semantics screenshot -->
-[Semantics Screenshot Placeholder]
+<div align="center">
+  <img src="readme_assets/semantics.PNG" alt="Semantics Screenshot" width="300">
+</div>
 
 ### Profiling
 
-<!-- TODO: Add profiling screenshot -->
-[Profiling Screenshot Placeholder]
+Profiling was performed using Flutter DevTools. No jank frames or performance issues were detected.
+
+<div align="center">
+  <img src="readme_assets/performance.gif" alt="Profiling preview" width="300">
+</div>
 
 ### Leak Tracking
 
-<!-- TODO: Add leak tracking video -->
-[Leak Tracking Video Placeholder]
+Used `leak_tracker` package to monitor for memory leaks during development. No leaks were detected.
