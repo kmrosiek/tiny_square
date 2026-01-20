@@ -12,6 +12,19 @@ A Flutter app that fetches random images and displays them as centered squares w
 
 ![Error preview](readme_assets/error.gif)
 
+<table style="width: 100%;">
+  <tr>
+    <td>
+      <p align="center"><b>App Preview</b></p>
+      <img src="readme_assets/demo.gif" alt="App preview" width="100%">
+    </td>
+    <td>
+      <p align="center"><b>Error Preview</b></p>
+      <img src="readme_assets/error.gif" alt="Error preview" width="100%">
+    </td>
+  </tr>
+</table>
+
 
 ## Features
 
