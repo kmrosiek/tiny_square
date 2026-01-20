@@ -54,7 +54,9 @@ flutter run
 
 ### Semantics
 
-![Semantic](readme_assets/semantics.PNG).
+<div align="center">
+  <img src="readme_assets/semantics.PNG" alt="App Screenshot" width="300">
+</div>
 
 ### Profiling
 
