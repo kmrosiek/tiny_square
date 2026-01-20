@@ -77,11 +77,13 @@ This project does not currently include automated tests. In a production environ
 
 Profiling was performed using Flutter DevTools. No jank frames or performance issues were detected.
 
-![Profiling preview](readme_assets/performance.gif)
+<div align="center">
+  <img src="readme_assets/performance.gif" alt="Profiling preview" width="300">
+</div>
 
 ### Leak Tracking
 
-Used `leak_tracker` to monitor for memory leaks during development. No leaks were detected.
+Used `leak_tracker` package to monitor for memory leaks during development. No leaks were detected.
 
 <!-- TODO: Add leak tracking video -->
 [Leak Tracking Video Placeholder]
