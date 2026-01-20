@@ -8,17 +8,9 @@ import '../../infrastructure/repositories/image_repository_impl.dart';
 final getIt = GetIt.instance;
 
 void setupDependencies() {
-  getIt.registerLazySingleton<http.Client>(() => http.Client());
-
-  getIt.registerLazySingleton<ImageRemoteDataSource>(
-    () => ImageRemoteDataSourceImpl(client: getIt<http.Client>()),
-  );
-
-  getIt.registerLazySingleton<ImageRepository>(
-    () => ImageRepositoryImpl(dataSource: getIt<ImageRemoteDataSource>()),
-  );
-
-  getIt.registerFactory<ImageCubit>(
-    () => ImageCubit(repository: getIt<ImageRepository>()),
-  );
+  getIt
+    ..registerLazySingleton<http.Client>(http.Client.new)
+    ..registerLazySingleton<ImageRemoteDataSource>(() => ImageRemoteDataSourceImpl(client: getIt<http.Client>()))
+    ..registerLazySingleton<ImageRepository>(() => ImageRepositoryImpl(dataSource: getIt<ImageRemoteDataSource>()))
+    ..registerFactory<ImageCubit>(() => ImageCubit(repository: getIt<ImageRepository>()));
 }

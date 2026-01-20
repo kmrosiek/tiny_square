@@ -12,13 +12,9 @@ class Homepage extends StatelessWidget {
     return BlocBuilder<ImageCubit, ImageState>(
       builder: (context, state) {
         final hasImage = state.imageUrl != null;
-        final backgroundColor = hasImage
-            ? state.backgroundColor
-            : Theme.of(context).scaffoldBackgroundColor;
+        final backgroundColor = hasImage ? state.backgroundColor : Theme.of(context).scaffoldBackgroundColor;
 
-        final textColor = hasImage
-            ? state.textColor
-            : Theme.of(context).colorScheme.onSurface;
+        final textColor = hasImage ? state.textColor : Theme.of(context).colorScheme.onSurface;
 
         return AnimatedContainer(
           duration: const Duration(milliseconds: 500),
@@ -29,15 +25,11 @@ class Homepage extends StatelessWidget {
             body: SafeArea(
               child: Center(
                 child: Padding(
-                  padding: const EdgeInsets.all(24.0),
+                  padding: const EdgeInsets.all(24),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Expanded(
-                        child: Center(
-                          child: _buildImageSection(context, state),
-                        ),
-                      ),
+                      Expanded(child: Center(child: _buildImageSection(context, state))),
                       const SizedBox(height: 24),
                       _buildButton(context, state, textColor),
                     ],
@@ -82,18 +74,11 @@ class Homepage extends StatelessWidget {
             ? SizedBox(
                 width: 20,
                 height: 20,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(textColor),
-                ),
+                child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(textColor)),
               )
             : Text(
                 'Another',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: textColor,
-                ),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: textColor),
               ),
       ),
     );
@@ -110,9 +95,9 @@ class _LoadingIndicator extends StatelessWidget {
 }
 
 class _ImageDisplay extends StatefulWidget {
-  final String imageUrl;
-
   const _ImageDisplay({required this.imageUrl});
+
+  final String imageUrl;
 
   @override
   State<_ImageDisplay> createState() => _ImageDisplayState();
@@ -123,9 +108,7 @@ class _ImageDisplayState extends State<_ImageDisplay> {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final size = constraints.maxWidth < constraints.maxHeight
-            ? constraints.maxWidth
-            : constraints.maxHeight * 0.8;
+        final size = constraints.maxWidth < constraints.maxHeight ? constraints.maxWidth : constraints.maxHeight * 0.8;
 
         return Semantics(
           image: true,
@@ -143,10 +126,8 @@ class _ImageDisplayState extends State<_ImageDisplay> {
                   color: Colors.grey.shade300,
                   child: const Center(child: CircularProgressIndicator()),
                 ),
-                errorWidget: (context, url, error) => Container(
-                  color: Colors.grey.shade300,
-                  child: const Icon(Icons.error, size: 48),
-                ),
+                errorWidget: (context, url, error) =>
+                    Container(color: Colors.grey.shade300, child: const Icon(Icons.error, size: 48)),
                 imageBuilder: (context, imageProvider) {
                   WidgetsBinding.instance.addPostFrameCallback((_) {
                     context.read<ImageCubit>().updateColorsFromImage(imageProvider);
@@ -163,36 +144,22 @@ class _ImageDisplayState extends State<_ImageDisplay> {
 }
 
 class _ErrorDisplay extends StatelessWidget {
-  final String message;
-
   const _ErrorDisplay({required this.message});
+
+  final String message;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(
-          Icons.error_outline,
-          size: 64,
-          color: Theme.of(context).colorScheme.error,
-        ),
+        Icon(Icons.error_outline, size: 64, color: Theme.of(context).colorScheme.error),
         const SizedBox(height: 16),
-        Text(
-          'Failed to load image',
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
+        Text('Failed to load image', style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: 8),
-        Text(
-          message,
-          textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.bodySmall,
-        ),
+        Text(message, textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodySmall),
         const SizedBox(height: 16),
-        TextButton(
-          onPressed: () => context.read<ImageCubit>().loadImage(),
-          child: const Text('Retry'),
-        ),
+        TextButton(onPressed: () => context.read<ImageCubit>().loadImage(), child: const Text('Retry')),
       ],
     );
   }

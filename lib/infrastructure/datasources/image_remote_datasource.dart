@@ -8,9 +8,8 @@ abstract class ImageRemoteDataSource {
 }
 
 class ImageRemoteDataSourceImpl implements ImageRemoteDataSource {
+  const ImageRemoteDataSourceImpl({required this.client});
   final http.Client client;
-
-  ImageRemoteDataSourceImpl({required this.client});
 
   @override
   Future<RandomImageModel> getRandomImage() async {

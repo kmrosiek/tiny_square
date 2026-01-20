@@ -1,12 +1,6 @@
 import 'package:flutter/material.dart';
 
 class ImageState {
-  final bool isLoading;
-  final String? imageUrl;
-  final Color backgroundColor;
-  final Color textColor;
-  final String? errorMessage;
-
   const ImageState({
     this.isLoading = false,
     this.imageUrl,
@@ -14,6 +8,11 @@ class ImageState {
     this.textColor = Colors.white,
     this.errorMessage,
   });
+  final bool isLoading;
+  final String? imageUrl;
+  final Color backgroundColor;
+  final Color textColor;
+  final String? errorMessage;
 
   ImageState copyWith({
     bool? isLoading,
