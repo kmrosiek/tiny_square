@@ -14,13 +14,10 @@ class ImageCubit extends Cubit<ImageState> {
 
     final result = await repository.getRandomImage();
 
-    result.fold(
-      (failure) => emit(state.copyWith(isLoading: false, errorMessage: failure.message)),
-      (image) async {
-        emit(state.copyWith(imageBytes: image.bytes));
-        final extractedColors = await colorExtractor.extractColors(image.bytes);
-        emit(ImageState(imageBytes: image.bytes, extractedColors: extractedColors));
-      },
-    );
+    result.fold((failure) => emit(state.copyWith(isLoading: false, errorMessage: failure.message)), (image) async {
+      emit(state.copyWith(imageBytes: image.bytes));
+      final extractedColors = await colorExtractor.extractColors(image.bytes);
+      emit(ImageState(imageBytes: image.bytes, extractedColors: extractedColors));
+    });
   }
 }
