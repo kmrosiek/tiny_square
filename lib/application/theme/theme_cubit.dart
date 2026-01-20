@@ -1,13 +1,13 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class ThemeCubit extends Cubit<ThemeMode> {
-  ThemeCubit() : super(_initialThemeMode());
+import '../../domain/services/brightness_provider.dart';
 
-  static ThemeMode _initialThemeMode() {
-    final brightness = PlatformDispatcher.instance.platformBrightness;
+class ThemeCubit extends Cubit<ThemeMode> {
+  ThemeCubit({required BrightnessProvider brightnessProvider}) : super(_initialThemeMode(brightnessProvider));
+
+  static ThemeMode _initialThemeMode(BrightnessProvider brightnessProvider) {
+    final brightness = brightnessProvider.currentBrightness;
     return brightness == Brightness.dark ? ThemeMode.dark : ThemeMode.light;
   }
 
