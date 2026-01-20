@@ -1,27 +1,28 @@
+import 'dart:typed_data';
 import '../../domain/entities/extracted_colors.dart';
 
 class ImageState {
   const ImageState({
     this.isLoading = false,
-    this.imageUrl,
+    this.imageBytes,
     this.extractedColors,
     this.errorMessage,
   });
 
   final bool isLoading;
-  final String? imageUrl;
+  final Uint8List? imageBytes;
   final ExtractedColors? extractedColors;
   final String? errorMessage;
 
   ImageState copyWith({
     bool? isLoading,
-    String? imageUrl,
+    Uint8List? imageBytes,
     ExtractedColors? extractedColors,
     String? errorMessage,
   }) {
     return ImageState(
       isLoading: isLoading ?? this.isLoading,
-      imageUrl: imageUrl ?? this.imageUrl,
+      imageBytes: imageBytes ?? this.imageBytes,
       extractedColors: extractedColors ?? this.extractedColors,
       errorMessage: errorMessage ?? this.errorMessage,
     );

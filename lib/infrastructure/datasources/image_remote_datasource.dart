@@ -9,17 +9,26 @@ abstract class ImageRemoteDataSource {
 
 class ImageRemoteDataSourceImpl implements ImageRemoteDataSource {
   const ImageRemoteDataSourceImpl({required this.client});
+
   final http.Client client;
 
   @override
   Future<RandomImageModel> getRandomImage() async {
     final response = await client.get(Uri.parse('${ApiConstants.baseUrl}/image/'));
 
-    if (response.statusCode == 200) {
-      final json = jsonDecode(response.body) as Map<String, dynamic>;
-      return RandomImageModel.fromJson(json);
-    } else {
-      throw Exception('Failed to load image: ${response.statusCode}');
+    if (response.statusCode != 200) {
+      throw Exception('Failed to load image URL: ${response.statusCode}');
     }
+
+    final json = jsonDecode(response.body) as Map<String, dynamic>;
+    final imageUrl = json['url'] as String;
+
+    final imageResponse = await client.get(Uri.parse(imageUrl));
+
+    if (imageResponse.statusCode != 200) {
+      throw Exception('Failed to load image: ${imageResponse.statusCode}');
+    }
+
+    return RandomImageModel.fromBytes(imageResponse.bodyBytes);
   }
 }

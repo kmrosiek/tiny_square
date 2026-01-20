@@ -54,16 +54,16 @@ class Homepage extends StatelessWidget {
   }
 
   Widget _buildImageSection(ImageState state) {
-    if (state.isLoading && state.imageUrl == null) {
+    if (state.isLoading && state.imageBytes == null) {
       return const CircularProgressIndicator();
     }
 
-    if (state.errorMessage != null && state.imageUrl == null) {
+    if (state.errorMessage != null && state.imageBytes == null) {
       return ErrorDisplay(message: state.errorMessage!);
     }
 
-    if (state.imageUrl != null) {
-      return ImageDisplay(imageUrl: state.imageUrl!);
+    if (state.imageBytes != null) {
+      return ImageDisplay(imageBytes: state.imageBytes!);
     }
 
     return const SizedBox.shrink();
