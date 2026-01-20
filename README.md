@@ -1,16 +1,63 @@
-# tiny_square
+# Tiny Square
 
-A new Flutter project.
+A Flutter app that fetches random images and displays them as centered squares with adaptive background colors.
+
+## Demo
+
+<!-- TODO: Add demo video -->
+[Demo Video Placeholder]
+
+## Features
+
+- Fetches random images from API
+- Adaptive background colors extracted from images
+- Smooth animations (fade transitions, animated background)
+- Light/dark theme support with toggle
+- Accessibility support (semantic labels, screen reader compatible)
+
+## Architecture
+
+Clean Architecture with 4 layers:
+
+```
+lib/
+├── presentation/    # UI widgets, pages, helpers
+├── application/     # BLoC/Cubits, states, theme management
+├── domain/          # Entities, abstract repositories & services
+├── infrastructure/  # Implementations, datasources, models
+└── core/            # DI, failures, shared utilities
+```
+
+### Key Patterns
+
+- **BLoC/Cubit** for state management (flutter_bloc)
+- **Dependency Injection** via GetIt
+- **Functional error handling** with `dartz` package (`Either<Failure, T>` for results, `Option<T>` for nullable values)
+- **SOLID principles** throughout (abstractions injected, single responsibility per class)
+
+### Theming
+
+Colors are extracted from images using `palette_generator_master` to derive dominant and vibrant swatches. UI colors respect the current theme while adapting to image content — button and text colors are based on the theme's primary color but use `Color.lerp` to blend towards image-extracted colors for a more immersive experience.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+```bash
+flutter pub get
+flutter run
+```
+## Screenshots
 
-A few resources to get you started if this is your first Flutter project:
+### Semantics
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+<!-- TODO: Add semantics screenshot -->
+[Semantics Screenshot Placeholder]
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### Profiling
+
+<!-- TODO: Add profiling screenshot -->
+[Profiling Screenshot Placeholder]
+
+### Leak Tracking
+
+<!-- TODO: Add leak tracking video -->
+[Leak Tracking Video Placeholder]
