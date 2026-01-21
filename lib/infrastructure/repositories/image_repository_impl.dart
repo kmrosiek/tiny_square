@@ -26,6 +26,7 @@ class ImageRepositoryImpl implements ImageRepository {
   final Queue<RandomImage> _imageQueue = Queue();
   final StreamController<RandomImage> _imageStreamController = StreamController<RandomImage>.broadcast();
   bool _isInitializing = false;
+  bool _isFilling = false;
   bool _isDisposed = false;
   Failure? _lastFillQueueFailure;
 
@@ -60,41 +61,51 @@ class ImageRepositoryImpl implements ImageRepository {
   }
 
   Future<void> _fillQueue() async {
+    if (_isFilling) {
+      logger.debug('$_logTag: Queue fill already in progress, skipping');
+      return;
+    }
+    _isFilling = true;
+
     logger.debug(
       '$_logTag: Filling image queue. Current size: ${_imageQueue.length}, Target: ${PrefetchConstants.urlBufferTarget}',
     );
     // Clear previous failure when starting a new fill attempt
     _lastFillQueueFailure = null;
 
-    while (_imageQueue.length < PrefetchConstants.urlBufferTarget) {
-      try {
-        final url = await dataSource.getImageUrl();
-        final bytes = await dataSource.downloadImage(url);
-        final extractedColors = await colorExtractor.extractColors(bytes);
-        final randomImage = RandomImage(url: url, extractedColors: extractedColors);
+    try {
+      while (_imageQueue.length < PrefetchConstants.urlBufferTarget) {
+        try {
+          final url = await dataSource.getImageUrl();
+          final bytes = await dataSource.downloadImage(url);
+          final extractedColors = await colorExtractor.extractColors(bytes);
+          final randomImage = RandomImage(url: url, extractedColors: extractedColors);
 
-        if (_imageStreamController.hasListener && _imageQueue.isEmpty) {
-          logger.debug('$_logTag: Adding image to stream (listener waiting and no images in queue)');
-          _imageStreamController.add(randomImage);
-        } else {
-          logger.debug('$_logTag: Adding image to queue (no listener waiting or images in queue)');
-          _imageQueue.add(randomImage);
+          if (_imageStreamController.hasListener && _imageQueue.isEmpty) {
+            logger.debug('$_logTag: Adding image to stream (listener waiting and no images in queue)');
+            _imageStreamController.add(randomImage);
+          } else {
+            logger.debug('$_logTag: Adding image to queue (no listener waiting or images in queue)');
+            _imageQueue.add(randomImage);
+          }
+          logger.debug('$_logTag: Added image to queue. Queue size: ${_imageQueue.length}');
+        } on ImageNotFoundException catch (e) {
+          logger.warning('$_logTag: Image not found at ${e.url}, skipping to next...', e);
+          continue; // Continue loop to try another image
+        } catch (e, stackTrace) {
+          logger.warning('$_logTag: Failed to get image for queue, stopping refill', e, stackTrace);
+          final failure = ServerFailure('Failed to fetch images: $e');
+          _lastFillQueueFailure = failure;
+          if (_imageStreamController.hasListener) {
+            _imageStreamController.addError(failure, stackTrace);
+          }
+          break;
         }
-        logger.debug('$_logTag: Added image to queue. Queue size: ${_imageQueue.length}');
-      } on ImageNotFoundException catch (e) {
-        logger.warning('$_logTag: Image not found at ${e.url}, skipping to next...', e);
-        continue; // Continue loop to try another image
-      } catch (e, stackTrace) {
-        logger.warning('$_logTag: Failed to get image for queue, stopping refill', e, stackTrace);
-        final failure = ServerFailure('Failed to fetch images: $e');
-        _lastFillQueueFailure = failure;
-        if (_imageStreamController.hasListener) {
-          _imageStreamController.addError(failure, stackTrace);
-        }
-        break;
       }
+      logger.info('$_logTag: Finished filling queue. Final size: ${_imageQueue.length}');
+    } finally {
+      _isFilling = false;
     }
-    logger.info('$_logTag: Finished filling queue. Final size: ${_imageQueue.length}');
   }
 
   @override
@@ -123,7 +134,7 @@ class ImageRepositoryImpl implements ImageRepository {
       logger.info('$_logTag: Successfully retrieved pre-processed image. Remaining queue size: ${_imageQueue.length}');
 
       // Refill queue in background if below target (after image is consumed)
-      if (_imageQueue.length < PrefetchConstants.urlBufferTarget && !_isInitializing) {
+      if (_imageQueue.length < PrefetchConstants.urlBufferTarget && !_isInitializing && !_isFilling) {
         logger.debug('$_logTag: Queue below target, refilling in background');
         unawaited(_fillQueue());
       }
