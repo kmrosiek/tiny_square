@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../../core/constants/api_constants.dart';
 import '../models/random_image_model.dart';
 
 abstract class ImageRemoteDataSource {
-  Future<RandomImageModel> getRandomImage();
+  Future<String> getImageUrl();
+  Future<RandomImageModel> downloadImage(String url);
 }
 
 class ImageRemoteDataSourceImpl implements ImageRemoteDataSource {
@@ -25,7 +25,7 @@ class ImageRemoteDataSourceImpl implements ImageRemoteDataSource {
   static int _currentIndex = 0;
 
   @override
-  Future<RandomImageModel> getRandomImage() async {
+  Future<String> getImageUrl() async {
     //final response = await client.get(Uri.parse('${ApiConstants.baseUrl}/image/'));
     await Future<void>.delayed(const Duration(milliseconds: 100));
     final response = http.Response('{"url": "${_urlList[_currentIndex++ % _urlList.length]}"}', 200);
@@ -35,9 +35,12 @@ class ImageRemoteDataSourceImpl implements ImageRemoteDataSource {
     }
 
     final json = jsonDecode(response.body) as Map<String, dynamic>;
-    final imageUrl = json['url'] as String;
+    return json['url'] as String;
+  }
 
-    final imageResponse = await client.get(Uri.parse(imageUrl));
+  @override
+  Future<RandomImageModel> downloadImage(String url) async {
+    final imageResponse = await client.get(Uri.parse(url));
 
     if (imageResponse.statusCode != 200) {
       throw Exception('Failed to load image: ${imageResponse.statusCode}');

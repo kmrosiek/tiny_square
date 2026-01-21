@@ -15,9 +15,10 @@ class ImageRepositoryImpl implements ImageRepository {
   final ColorExtractor colorExtractor;
 
   @override
-  Future<Either<Failure, RandomImage>> getRandomImage() async {
+  Future<Either<Failure, RandomImage>> getNextImage() async {
     try {
-      final result = await dataSource.getRandomImage();
+      final url = await dataSource.getImageUrl();
+      final result = await dataSource.downloadImage(url);
       final extractedColors = await colorExtractor.extractColors(result.bytes);
       return Right(RandomImage(bytes: result.bytes, extractedColors: extractedColors));
     } on SocketException {

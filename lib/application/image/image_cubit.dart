@@ -10,7 +10,7 @@ class ImageCubit extends Cubit<ImageState> {
   Future<void> fetchNextImage() async {
     emit(state.copyWith(isLoading: true));
 
-    final result = await repository.getRandomImage();
+    final result = await repository.getNextImage();
 
     result.fold(
       (failure) => emit(state.copyWith(isLoading: false, errorMessage: failure.message)),
