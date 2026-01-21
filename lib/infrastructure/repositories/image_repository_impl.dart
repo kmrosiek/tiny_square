@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:dartz/dartz.dart';
 
+import '../../core/error/exceptions.dart';
 import '../../core/error/failure.dart';
 import '../../core/logger/logger.dart';
 import '../../domain/entities/random_image.dart';
@@ -73,9 +74,12 @@ class ImageRepositoryImpl implements ImageRepository {
           _imageQueue.add(randomImage);
         }
         logger.debug('$_logTag: Added image to queue. Queue size: ${_imageQueue.length}');
+      } on ImageNotFoundException catch (e) {
+        logger.warning('$_logTag: Image not found at ${e.url}, skipping to next...', e);
+        continue; // Continue loop to try another image
       } catch (e, stackTrace) {
-        logger.warning('$_logTag: Failed to get image for queue', e, stackTrace);
-        // If we can't get images, break to avoid infinite loop
+        logger.warning('$_logTag: Failed to get image for queue, stopping refill', e, stackTrace);
+        // If we can't get images due to other reasons (network, etc.), break to avoid infinite loop
         break;
       }
     }

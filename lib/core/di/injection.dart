@@ -1,6 +1,5 @@
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:get_it/get_it.dart';
-import 'package:http/http.dart' as http;
 import 'package:tiny_square/application/theme/theme_cubit.dart';
 import 'package:tiny_square/domain/services/brightness_provider.dart';
 import 'package:tiny_square/infrastructure/services/platform_brightness_provider.dart';
@@ -18,15 +17,10 @@ final getIt = GetIt.instance;
 void setupDependencies() {
   getIt
     ..registerLazySingleton<Logger>(LoggerImpl.new)
-    ..registerLazySingleton<http.Client>(http.Client.new)
     ..registerLazySingleton<BaseCacheManager>(DefaultCacheManager.new)
     // Data sources
     ..registerLazySingleton<ImageRemoteDataSource>(
-      () => ImageRemoteDataSourceImpl(
-        client: getIt<http.Client>(),
-        cacheManager: getIt<BaseCacheManager>(),
-        logger: getIt<Logger>(),
-      ),
+      () => ImageRemoteDataSourceImpl(cacheManager: getIt<BaseCacheManager>(), logger: getIt<Logger>()),
     )
     // Services
     ..registerLazySingleton<BrightnessProvider>(PlatformBrightnessProvider.new)
