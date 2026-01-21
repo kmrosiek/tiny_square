@@ -17,6 +17,8 @@ class ImageRepositoryImpl implements ImageRepository {
     _initializeQueue();
   }
 
+  static const _logTag = '[ImageRepositoryImpl]';
+
   final ImageRemoteDataSource dataSource;
   final ColorExtractor colorExtractor;
   final Logger logger;
@@ -36,76 +38,78 @@ class ImageRepositoryImpl implements ImageRepository {
 
   @override
   Future<void> initialize() async {
-    logger.debug('Initializing ImageRepositoryImpl');
+    logger.debug('$_logTag: Initializing ImageRepositoryImpl');
     await _initializeQueue();
   }
 
   Future<void> _initializeQueue() async {
     if (_isInitializing) {
-      logger.debug('Queue initialization already in progress');
+      logger.debug('$_logTag: Queue initialization already in progress');
       return;
     }
-    logger.debug('Initializing URL queue');
+    logger.debug('$_logTag: Initializing URL queue');
     _isInitializing = true;
     await _fillQueue();
     _isInitializing = false;
-    logger.info('URL queue initialized with ${_urlQueue.length} URLs');
+    logger.info('$_logTag: URL queue initialized with ${_urlQueue.length} URLs');
   }
 
   Future<void> _fillQueue() async {
-    logger.debug('Filling URL queue. Current size: ${_urlQueue.length}, Target: ${PrefetchConstants.urlBufferTarget}');
+    logger.debug(
+      '$_logTag: Filling URL queue. Current size: ${_urlQueue.length}, Target: ${PrefetchConstants.urlBufferTarget}',
+    );
     while (_urlQueue.length < PrefetchConstants.urlBufferTarget) {
       try {
         final url = await dataSource.getImageUrl();
         _urlQueue.add(url);
         _urlStreamController.add(url);
-        logger.debug('Added URL to queue. Queue size: ${_urlQueue.length}');
+        logger.debug('$_logTag: Added URL to queue. Queue size: ${_urlQueue.length}');
       } catch (e, stackTrace) {
-        logger.warning('Failed to get URL for queue', e, stackTrace);
+        logger.warning('$_logTag: Failed to get URL for queue', e, stackTrace);
         // If we can't get URLs, break to avoid infinite loop
         break;
       }
     }
-    logger.info('Finished filling queue. Final size: ${_urlQueue.length}');
+    logger.info('$_logTag: Finished filling queue. Final size: ${_urlQueue.length}');
   }
 
   @override
   Future<Either<Failure, RandomImage>> getNextImage() async {
     if (_isDisposed) {
-      logger.warning('Attempted to get next image after disposal');
+      logger.warning('$_logTag: Attempted to get next image after disposal');
       return const Left(ServerFailure('Repository has been disposed'));
     }
-    logger.debug('Getting next image. Queue size: ${_urlQueue.length}');
+    logger.debug('$_logTag: Getting next image. Queue size: ${_urlQueue.length}');
 
     // Ensure queue is initialized
     if (_urlQueue.isEmpty && !_isInitializing) {
-      logger.info('Queue is empty, initializing...');
+      logger.info('$_logTag: Queue is empty, initializing...');
       await _initializeQueue();
     }
 
     try {
       // Await next URL (from queue if available, otherwise from stream)
       final url = await _getNextUrl();
-      logger.debug('Processing image from URL: $url');
+      logger.debug('$_logTag: Processing image from URL: $url');
 
       final result = await dataSource.downloadImage(url);
-      logger.debug('Image downloaded, extracting colors');
+      logger.debug('$_logTag: Image downloaded, extracting colors');
 
       final extractedColors = await colorExtractor.extractColors(result.bytes);
-      logger.info('Successfully processed image. Remaining queue size: ${_urlQueue.length}');
+      logger.info('$_logTag: Successfully processed image. Remaining queue size: ${_urlQueue.length}');
 
       // Refill queue in background if below target (after image is consumed)
       if (_urlQueue.length < PrefetchConstants.urlBufferTarget && !_isInitializing) {
-        logger.debug('Queue below target, refilling in background');
+        logger.debug('$_logTag: Queue below target, refilling in background');
         unawaited(_fillQueue());
       }
 
       return Right(RandomImage(bytes: result.bytes, extractedColors: extractedColors));
     } on SocketException catch (e, stackTrace) {
-      logger.error('Network error while getting next image', e, stackTrace);
+      logger.error('$_logTag: Network error while getting next image', e, stackTrace);
       return const Left(NetworkFailure('No internet connection'));
     } catch (e, stackTrace) {
-      logger.error('Error getting next image', e, stackTrace);
+      logger.error('$_logTag: Error getting next image', e, stackTrace);
       return Left(ServerFailure(e.toString()));
     }
   }
@@ -115,7 +119,7 @@ class ImageRepositoryImpl implements ImageRepository {
     if (_isDisposed) {
       return;
     }
-    logger.debug('Disposing ImageRepositoryImpl');
+    logger.debug('$_logTag: Disposing ImageRepositoryImpl');
     _isDisposed = true;
     _urlStreamController.close();
     _urlQueue.clear();

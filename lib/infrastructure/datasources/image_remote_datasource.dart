@@ -11,6 +11,8 @@ abstract class ImageRemoteDataSource {
 class ImageRemoteDataSourceImpl implements ImageRemoteDataSource {
   const ImageRemoteDataSourceImpl({required this.client, required this.logger});
 
+  static const _logTag = '[ImageRemoteDataSourceImpl]';
+
   final http.Client client;
   final Logger logger;
 
@@ -28,42 +30,42 @@ class ImageRemoteDataSourceImpl implements ImageRemoteDataSource {
 
   @override
   Future<String> getImageUrl() async {
-    logger.debug('Fetching image URL');
+    logger.debug('$_logTag: Fetching image URL $_currentIndex');
     try {
       //final response = await client.get(Uri.parse('${ApiConstants.baseUrl}/image/'));
       await Future<void>.delayed(const Duration(milliseconds: 100));
       final response = http.Response('{"url": "${_urlList[_currentIndex++ % _urlList.length]}"}', 200);
 
       if (response.statusCode != 200) {
-        logger.error('Failed to load image URL', Exception('Status code: ${response.statusCode}'));
+        logger.error('$_logTag: Failed to load image URL', Exception('Status code: ${response.statusCode}'));
         throw Exception('Failed to load image URL: ${response.statusCode}');
       }
 
       final json = jsonDecode(response.body) as Map<String, dynamic>;
       final url = json['url'] as String;
-      logger.info('Successfully fetched image URL: $url');
+      logger.info('$_logTag: Successfully fetched image URL: $url');
       return url;
     } catch (e, stackTrace) {
-      logger.error('Error fetching image URL', e, stackTrace);
+      logger.error('$_logTag: Error fetching image URL', e, stackTrace);
       rethrow;
     }
   }
 
   @override
   Future<RandomImageModel> downloadImage(String url) async {
-    logger.debug('Downloading image from URL: $url');
+    logger.debug('$_logTag: Downloading image from URL: $url');
     try {
       final imageResponse = await client.get(Uri.parse(url));
 
       if (imageResponse.statusCode != 200) {
-        logger.error('Failed to load image', Exception('Status code: ${imageResponse.statusCode}'));
+        logger.error('$_logTag: Failed to load image', Exception('Status code: ${imageResponse.statusCode}'));
         throw Exception('Failed to load image: ${imageResponse.statusCode}');
       }
 
-      logger.info('Successfully downloaded image from URL: $url');
+      logger.info('$_logTag: Successfully downloaded image from URL: $url');
       return RandomImageModel.fromBytes(imageResponse.bodyBytes);
     } catch (e, stackTrace) {
-      logger.error('Error downloading image from URL: $url', e, stackTrace);
+      logger.error('$_logTag: Error downloading image from URL: $url', e, stackTrace);
       rethrow;
     }
   }
