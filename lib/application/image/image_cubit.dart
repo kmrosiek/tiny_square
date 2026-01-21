@@ -31,7 +31,7 @@ class ImageCubit extends Cubit<ImageState> {
       },
       (image) {
         logger.info('$_logTag: Successfully fetched image');
-        emit(ImageState(isLoading: false, imageBytes: image.bytes, extractedColors: image.extractedColors));
+        emit(ImageState(isLoading: false, imageUrl: image.url, extractedColors: image.extractedColors));
       },
     );
   }

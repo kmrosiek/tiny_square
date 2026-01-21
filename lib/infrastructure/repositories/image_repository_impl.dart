@@ -69,9 +69,9 @@ class ImageRepositoryImpl implements ImageRepository {
     while (_imageQueue.length < PrefetchConstants.urlBufferTarget) {
       try {
         final url = await dataSource.getImageUrl();
-        final result = await dataSource.downloadImage(url);
-        final extractedColors = await colorExtractor.extractColors(result.bytes);
-        final randomImage = RandomImage(bytes: result.bytes, extractedColors: extractedColors);
+        final bytes = await dataSource.downloadImage(url);
+        final extractedColors = await colorExtractor.extractColors(bytes);
+        final randomImage = RandomImage(url: url, extractedColors: extractedColors);
 
         if (_imageStreamController.hasListener && _imageQueue.isEmpty) {
           logger.debug('$_logTag: Adding image to stream (listener waiting and no images in queue)');

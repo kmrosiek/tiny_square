@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:tiny_square/core/di/injection.dart';
 import 'package:tiny_square/presentation/consts/homepage_constants.dart';
 import 'package:tiny_square/presentation/helpers/homepage_colors.dart';
 import 'package:tiny_square/presentation/widgets/animated_loading_border/animated_loading_border.dart';
@@ -39,7 +41,8 @@ class Homepage extends StatelessWidget {
                               child: ImageOrErrorMessage(
                                 isLoading: state.isLoading,
                                 errorMessage: state.errorMessage,
-                                imageBytes: state.imageBytes,
+                                imageUrl: state.imageUrl,
+                                cacheManager: getIt<BaseCacheManager>(),
                               ),
                             ),
                           ),
