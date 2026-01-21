@@ -83,12 +83,6 @@ class ImageRepositoryImpl implements ImageRepository {
       await _initializeQueue();
     }
 
-    // Refill queue in background if below target
-    if (_urlQueue.length < PrefetchConstants.urlBufferTarget && !_isInitializing) {
-      logger.debug('Queue below target, refilling in background');
-      unawaited(_fillQueue());
-    }
-
     try {
       // Await next URL (from queue if available, otherwise from stream)
       final url = await _getNextUrl();
@@ -99,6 +93,12 @@ class ImageRepositoryImpl implements ImageRepository {
 
       final extractedColors = await colorExtractor.extractColors(result.bytes);
       logger.info('Successfully processed image. Remaining queue size: ${_urlQueue.length}');
+
+      // Refill queue in background if below target (after image is consumed)
+      if (_urlQueue.length < PrefetchConstants.urlBufferTarget && !_isInitializing) {
+        logger.debug('Queue below target, refilling in background');
+        unawaited(_fillQueue());
+      }
 
       return Right(RandomImage(bytes: result.bytes, extractedColors: extractedColors));
     } on SocketException catch (e, stackTrace) {
