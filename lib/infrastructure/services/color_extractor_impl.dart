@@ -30,7 +30,16 @@ class ColorExtractorImpl implements ColorExtractor {
   Future<void> _initializeIsolate() async {
     logger.debug('$_logTag: Initializing isolate');
     _receivePort = ReceivePort();
-    _isolate = await Isolate.spawn(_isolateEntryPoint, _receivePort!.sendPort, errorsAreFatal: false);
+
+    try {
+      _isolate = await Isolate.spawn(_isolateEntryPoint, _receivePort!.sendPort, errorsAreFatal: false);
+    } catch (e, stackTrace) {
+      logger.error('$_logTag: Failed to spawn isolate', e, stackTrace);
+      _receivePort?.close();
+      _receivePort = null;
+      _isolateReady.completeError(e, stackTrace);
+      return;
+    }
 
     _receivePort!.listen(
       (message) {
