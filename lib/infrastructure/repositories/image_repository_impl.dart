@@ -23,7 +23,7 @@ class ImageRepositoryImpl implements ImageRepository {
   final ColorExtractor colorExtractor;
   final Logger logger;
   final Queue<String> _urlQueue = Queue();
-  final StreamController<String> _urlStreamController = StreamController<String>.broadcast();
+  final StreamController<String> _urlStreamController = StreamController<String>();
   bool _isInitializing = false;
   bool _isDisposed = false;
 
@@ -61,8 +61,13 @@ class ImageRepositoryImpl implements ImageRepository {
     while (_urlQueue.length < PrefetchConstants.urlBufferTarget) {
       try {
         final url = await dataSource.getImageUrl();
-        _urlQueue.add(url);
-        _urlStreamController.add(url);
+        if (_urlStreamController.hasListener && _urlQueue.isEmpty) {
+          logger.debug('$_logTag: Adding URL to stream (listener waiting and no URLs in queue)');
+          _urlStreamController.add(url);
+        } else {
+          logger.debug('$_logTag: Adding URL to queue (no listener waiting or URLs in queue)');
+          _urlQueue.add(url);
+        }
         logger.debug('$_logTag: Added URL to queue. Queue size: ${_urlQueue.length}');
       } catch (e, stackTrace) {
         logger.warning('$_logTag: Failed to get URL for queue', e, stackTrace);
