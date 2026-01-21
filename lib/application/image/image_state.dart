@@ -2,12 +2,7 @@ import 'dart:typed_data';
 import '../../domain/entities/extracted_colors.dart';
 
 class ImageState {
-  const ImageState({
-    this.isLoading = false,
-    this.imageBytes,
-    this.extractedColors,
-    this.errorMessage,
-  });
+  const ImageState({this.isLoading = true, this.imageBytes, this.extractedColors, this.errorMessage});
 
   final bool isLoading;
   final Uint8List? imageBytes;
