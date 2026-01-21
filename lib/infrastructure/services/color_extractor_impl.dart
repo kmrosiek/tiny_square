@@ -108,7 +108,7 @@ class ColorExtractorImpl implements ColorExtractor {
       );
     } catch (e, stackTrace) {
       logger.error('$_logTag: Failed to extract colors for request $requestId', e, stackTrace);
-      throw Exception('Failed to extract colors: $e');
+      rethrow;
     }
   }
 
