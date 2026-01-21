@@ -21,10 +21,10 @@ void setupDependencies() {
     ..registerLazySingleton<BrightnessProvider>(PlatformBrightnessProvider.new)
     ..registerLazySingleton<ColorExtractor>(ColorExtractorImpl.new)
     // Repositories
-    ..registerLazySingleton<ImageRepository>(() => ImageRepositoryImpl(dataSource: getIt<ImageRemoteDataSource>()))
-    // Cubits
-    ..registerFactory<ImageCubit>(
-      () => ImageCubit(repository: getIt<ImageRepository>(), colorExtractor: getIt<ColorExtractor>()),
+    ..registerLazySingleton<ImageRepository>(
+      () => ImageRepositoryImpl(dataSource: getIt<ImageRemoteDataSource>(), colorExtractor: getIt<ColorExtractor>()),
     )
+    // Cubits
+    ..registerFactory<ImageCubit>(() => ImageCubit(repository: getIt<ImageRepository>()))
     ..registerFactory<ThemeCubit>(() => ThemeCubit(brightnessProvider: getIt<BrightnessProvider>()));
 }
