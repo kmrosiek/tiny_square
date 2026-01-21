@@ -46,7 +46,7 @@ class Homepage extends StatelessWidget {
                         ),
                         const SizedBox(height: 24),
                         NextButton(
-                          onPressed: () => context.read<ImageCubit>().fetchRandomImage(),
+                          onPressed: () => context.read<ImageCubit>().fetchNextImage(),
                           isLoading: state.isLoading,
                           backgroundColor: homepageColors.tintedPrimary,
                           foregroundColor: homepageColors.onTintedPrimary,
