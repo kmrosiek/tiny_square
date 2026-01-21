@@ -22,18 +22,18 @@ class ImageRepositoryImpl implements ImageRepository {
   final ImageRemoteDataSource dataSource;
   final ColorExtractor colorExtractor;
   final Logger logger;
-  final Queue<String> _urlQueue = Queue();
-  final StreamController<String> _urlStreamController = StreamController<String>();
+  final Queue<RandomImage> _imageQueue = Queue();
+  final StreamController<RandomImage> _imageStreamController = StreamController<RandomImage>();
   bool _isInitializing = false;
   bool _isDisposed = false;
 
-  Future<String> _getNextUrl() async {
-    // If queue has URLs, return the first one immediately
-    if (_urlQueue.isNotEmpty) {
-      return _urlQueue.removeFirst();
+  Future<RandomImage> _internalGetNextImage() async {
+    // If queue has images, return the first one immediately
+    if (_imageQueue.isNotEmpty) {
+      return _imageQueue.removeFirst();
     }
-    // Otherwise, wait for next URL from stream
-    return _urlStreamController.stream.first;
+    // Otherwise, wait for next image from stream
+    return _imageStreamController.stream.first;
   }
 
   @override
@@ -47,35 +47,39 @@ class ImageRepositoryImpl implements ImageRepository {
       logger.debug('$_logTag: Queue initialization already in progress');
       return;
     }
-    logger.debug('$_logTag: Initializing URL queue');
+    logger.debug('$_logTag: Initializing image queue');
     _isInitializing = true;
     await _fillQueue();
     _isInitializing = false;
-    logger.info('$_logTag: URL queue initialized with ${_urlQueue.length} URLs');
+    logger.info('$_logTag: Image queue initialized with ${_imageQueue.length} images');
   }
 
   Future<void> _fillQueue() async {
     logger.debug(
-      '$_logTag: Filling URL queue. Current size: ${_urlQueue.length}, Target: ${PrefetchConstants.urlBufferTarget}',
+      '$_logTag: Filling image queue. Current size: ${_imageQueue.length}, Target: ${PrefetchConstants.urlBufferTarget}',
     );
-    while (_urlQueue.length < PrefetchConstants.urlBufferTarget) {
+    while (_imageQueue.length < PrefetchConstants.urlBufferTarget) {
       try {
         final url = await dataSource.getImageUrl();
-        if (_urlStreamController.hasListener && _urlQueue.isEmpty) {
-          logger.debug('$_logTag: Adding URL to stream (listener waiting and no URLs in queue)');
-          _urlStreamController.add(url);
+        final result = await dataSource.downloadImage(url);
+        final extractedColors = await colorExtractor.extractColors(result.bytes);
+        final randomImage = RandomImage(bytes: result.bytes, extractedColors: extractedColors);
+
+        if (_imageStreamController.hasListener && _imageQueue.isEmpty) {
+          logger.debug('$_logTag: Adding image to stream (listener waiting and no images in queue)');
+          _imageStreamController.add(randomImage);
         } else {
-          logger.debug('$_logTag: Adding URL to queue (no listener waiting or URLs in queue)');
-          _urlQueue.add(url);
+          logger.debug('$_logTag: Adding image to queue (no listener waiting or images in queue)');
+          _imageQueue.add(randomImage);
         }
-        logger.debug('$_logTag: Added URL to queue. Queue size: ${_urlQueue.length}');
+        logger.debug('$_logTag: Added image to queue. Queue size: ${_imageQueue.length}');
       } catch (e, stackTrace) {
-        logger.warning('$_logTag: Failed to get URL for queue', e, stackTrace);
-        // If we can't get URLs, break to avoid infinite loop
+        logger.warning('$_logTag: Failed to get image for queue', e, stackTrace);
+        // If we can't get images, break to avoid infinite loop
         break;
       }
     }
-    logger.info('$_logTag: Finished filling queue. Final size: ${_urlQueue.length}');
+    logger.info('$_logTag: Finished filling queue. Final size: ${_imageQueue.length}');
   }
 
   @override
@@ -84,32 +88,26 @@ class ImageRepositoryImpl implements ImageRepository {
       logger.warning('$_logTag: Attempted to get next image after disposal');
       return const Left(ServerFailure('Repository has been disposed'));
     }
-    logger.debug('$_logTag: Getting next image. Queue size: ${_urlQueue.length}');
+    logger.debug('$_logTag: Getting next image. Queue size: ${_imageQueue.length}');
 
     // Ensure queue is initialized
-    if (_urlQueue.isEmpty && !_isInitializing) {
+    if (_imageQueue.isEmpty && !_isInitializing) {
       logger.info('$_logTag: Queue is empty, initializing...');
       await _initializeQueue();
     }
 
     try {
-      // Await next URL (from queue if available, otherwise from stream)
-      final url = await _getNextUrl();
-      logger.debug('$_logTag: Processing image from URL: $url');
-
-      final result = await dataSource.downloadImage(url);
-      logger.debug('$_logTag: Image downloaded, extracting colors');
-
-      final extractedColors = await colorExtractor.extractColors(result.bytes);
-      logger.info('$_logTag: Successfully processed image. Remaining queue size: ${_urlQueue.length}');
+      // Await next image (from queue if available, otherwise from stream)
+      final image = await _internalGetNextImage();
+      logger.info('$_logTag: Successfully retrieved pre-processed image. Remaining queue size: ${_imageQueue.length}');
 
       // Refill queue in background if below target (after image is consumed)
-      if (_urlQueue.length < PrefetchConstants.urlBufferTarget && !_isInitializing) {
+      if (_imageQueue.length < PrefetchConstants.urlBufferTarget && !_isInitializing) {
         logger.debug('$_logTag: Queue below target, refilling in background');
         unawaited(_fillQueue());
       }
 
-      return Right(RandomImage(bytes: result.bytes, extractedColors: extractedColors));
+      return Right(image);
     } on SocketException catch (e, stackTrace) {
       logger.error('$_logTag: Network error while getting next image', e, stackTrace);
       return const Left(NetworkFailure('No internet connection'));
@@ -126,7 +124,7 @@ class ImageRepositoryImpl implements ImageRepository {
     }
     logger.debug('$_logTag: Disposing ImageRepositoryImpl');
     _isDisposed = true;
-    _urlStreamController.close();
-    _urlQueue.clear();
+    _imageStreamController.close();
+    _imageQueue.clear();
   }
 }

@@ -1,3 +1,4 @@
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
 import 'package:tiny_square/application/theme/theme_cubit.dart';
@@ -18,9 +19,14 @@ void setupDependencies() {
   getIt
     ..registerLazySingleton<Logger>(LoggerImpl.new)
     ..registerLazySingleton<http.Client>(http.Client.new)
+    ..registerLazySingleton<BaseCacheManager>(DefaultCacheManager.new)
     // Data sources
     ..registerLazySingleton<ImageRemoteDataSource>(
-      () => ImageRemoteDataSourceImpl(client: getIt<http.Client>(), logger: getIt<Logger>()),
+      () => ImageRemoteDataSourceImpl(
+        client: getIt<http.Client>(),
+        cacheManager: getIt<BaseCacheManager>(),
+        logger: getIt<Logger>(),
+      ),
     )
     // Services
     ..registerLazySingleton<BrightnessProvider>(PlatformBrightnessProvider.new)

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:http/http.dart' as http;
 import '../../core/logger/logger.dart';
 import '../models/random_image_model.dart';
@@ -9,11 +10,12 @@ abstract class ImageRemoteDataSource {
 }
 
 class ImageRemoteDataSourceImpl implements ImageRemoteDataSource {
-  const ImageRemoteDataSourceImpl({required this.client, required this.logger});
+  const ImageRemoteDataSourceImpl({required this.client, required this.cacheManager, required this.logger});
 
   static const _logTag = '[ImageRemoteDataSourceImpl]';
 
   final http.Client client;
+  final BaseCacheManager cacheManager;
   final Logger logger;
 
   static const List<String> _urlList = [
@@ -55,15 +57,11 @@ class ImageRemoteDataSourceImpl implements ImageRemoteDataSource {
   Future<RandomImageModel> downloadImage(String url) async {
     logger.debug('$_logTag: Downloading image from URL: $url');
     try {
-      final imageResponse = await client.get(Uri.parse(url));
+      final file = await cacheManager.getSingleFile(url);
+      final bytes = await file.readAsBytes();
 
-      if (imageResponse.statusCode != 200) {
-        logger.error('$_logTag: Failed to load image', Exception('Status code: ${imageResponse.statusCode}'));
-        throw Exception('Failed to load image: ${imageResponse.statusCode}');
-      }
-
-      logger.info('$_logTag: Successfully downloaded image from URL: $url');
-      return RandomImageModel.fromBytes(imageResponse.bodyBytes);
+      logger.info('$_logTag: Successfully downloaded/retrieved image from cache: $url');
+      return RandomImageModel.fromBytes(bytes);
     } catch (e, stackTrace) {
       logger.error('$_logTag: Error downloading image from URL: $url', e, stackTrace);
       rethrow;
