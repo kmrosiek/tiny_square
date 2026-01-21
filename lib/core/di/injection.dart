@@ -30,7 +30,7 @@ void setupDependencies() {
     )
     // Services
     ..registerLazySingleton<BrightnessProvider>(PlatformBrightnessProvider.new)
-    ..registerLazySingleton<ColorExtractor>(ColorExtractorImpl.new)
+    ..registerLazySingleton<ColorExtractor>(() => ColorExtractorImpl(logger: getIt<Logger>()))
     // Repositories
     ..registerLazySingleton<ImageRepository>(
       () => ImageRepositoryImpl(
