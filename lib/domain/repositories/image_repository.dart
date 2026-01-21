@@ -6,4 +6,5 @@ import '../entities/random_image.dart';
 abstract class ImageRepository {
   Future<void> initialize();
   Future<Either<Failure, RandomImage>> getNextImage();
+  void dispose();
 }

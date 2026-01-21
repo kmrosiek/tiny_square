@@ -21,7 +21,18 @@ class ImageRepositoryImpl implements ImageRepository {
   final ColorExtractor colorExtractor;
   final Logger logger;
   final Queue<String> _urlQueue = Queue();
+  final StreamController<String> _urlStreamController = StreamController<String>.broadcast();
   bool _isInitializing = false;
+  bool _isDisposed = false;
+
+  Future<String> _getNextUrl() async {
+    // If queue has URLs, return the first one immediately
+    if (_urlQueue.isNotEmpty) {
+      return _urlQueue.removeFirst();
+    }
+    // Otherwise, wait for next URL from stream
+    return _urlStreamController.stream.first;
+  }
 
   @override
   Future<void> initialize() async {
@@ -47,6 +58,7 @@ class ImageRepositoryImpl implements ImageRepository {
       try {
         final url = await dataSource.getImageUrl();
         _urlQueue.add(url);
+        _urlStreamController.add(url);
         logger.debug('Added URL to queue. Queue size: ${_urlQueue.length}');
       } catch (e, stackTrace) {
         logger.warning('Failed to get URL for queue', e, stackTrace);
@@ -59,6 +71,10 @@ class ImageRepositoryImpl implements ImageRepository {
 
   @override
   Future<Either<Failure, RandomImage>> getNextImage() async {
+    if (_isDisposed) {
+      logger.warning('Attempted to get next image after disposal');
+      return const Left(ServerFailure('Repository has been disposed'));
+    }
     logger.debug('Getting next image. Queue size: ${_urlQueue.length}');
 
     // Ensure queue is initialized
@@ -73,13 +89,9 @@ class ImageRepositoryImpl implements ImageRepository {
       unawaited(_fillQueue());
     }
 
-    if (_urlQueue.isEmpty) {
-      logger.warning('No URLs available in queue');
-      return const Left(NetworkFailure('No URLs available'));
-    }
-
     try {
-      final url = _urlQueue.removeFirst();
+      // Await next URL (from queue if available, otherwise from stream)
+      final url = await _getNextUrl();
       logger.debug('Processing image from URL: $url');
 
       final result = await dataSource.downloadImage(url);
@@ -96,5 +108,16 @@ class ImageRepositoryImpl implements ImageRepository {
       logger.error('Error getting next image', e, stackTrace);
       return Left(ServerFailure(e.toString()));
     }
+  }
+
+  @override
+  void dispose() {
+    if (_isDisposed) {
+      return;
+    }
+    logger.debug('Disposing ImageRepositoryImpl');
+    _isDisposed = true;
+    _urlStreamController.close();
+    _urlQueue.clear();
   }
 }
