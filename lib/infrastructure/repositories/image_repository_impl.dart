@@ -130,5 +130,6 @@ class ImageRepositoryImpl implements ImageRepository {
     _isDisposed = true;
     _imageStreamController.close();
     _imageQueue.clear();
+    colorExtractor.dispose();
   }
 }

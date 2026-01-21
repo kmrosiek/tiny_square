@@ -103,6 +103,7 @@ class ColorExtractorImpl implements ColorExtractor {
     }
   }
 
+  @override
   void dispose() {
     if (_isDisposed) {
       return;
