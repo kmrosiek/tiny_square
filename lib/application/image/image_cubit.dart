@@ -36,9 +36,4 @@ class ImageCubit extends Cubit<ImageState> {
     );
   }
 
-  @override
-  Future<void> close() {
-    repository.dispose();
-    return super.close();
-  }
 }

@@ -32,6 +32,7 @@ void setupDependencies() {
         colorExtractor: getIt<ColorExtractor>(),
         logger: getIt<Logger>(),
       ),
+      dispose: (repository) => repository.dispose(),
     )
     // Cubits
     ..registerFactory<ImageCubit>(() => ImageCubit(repository: getIt<ImageRepository>(), logger: getIt<Logger>()))
