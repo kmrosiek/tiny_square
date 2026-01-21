@@ -23,6 +23,12 @@ class ImageRepositoryImpl implements ImageRepository {
   final Queue<String> _urlQueue = Queue();
   bool _isInitializing = false;
 
+  @override
+  Future<void> initialize() async {
+    logger.debug('Initializing ImageRepositoryImpl');
+    await _initializeQueue();
+  }
+
   Future<void> _initializeQueue() async {
     if (_isInitializing) {
       logger.debug('Queue initialization already in progress');

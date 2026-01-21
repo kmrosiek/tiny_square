@@ -9,6 +9,6 @@ class HomepageProvider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(create: (_) => getIt<ImageCubit>()..fetchNextImage(), child: const Homepage());
+    return BlocProvider(create: (_) => getIt<ImageCubit>()..initialize(), child: const Homepage());
   }
 }

@@ -9,6 +9,13 @@ class ImageCubit extends Cubit<ImageState> {
   final ImageRepository repository;
   final Logger logger;
 
+  Future<void> initialize() async {
+    logger.debug('Initializing ImageCubit');
+    await repository.initialize();
+    logger.info('ImageCubit initialized');
+    await fetchNextImage();
+  }
+
   Future<void> fetchNextImage() async {
     logger.debug('Fetching next image');
     emit(state.copyWith(isLoading: true));
