@@ -18,8 +18,8 @@ class ImageOrErrorMessage extends StatelessWidget {
         duration: HomepageConstants.fadeInOutDuration,
         child: isLoading
             ? const SizedBox.shrink(key: ValueKey('loading'))
-            : errorMessage != null
-            ? ErrorMessage(message: errorMessage!)
+            : errorMessage != null || imageBytes == null
+            ? ErrorMessage(message: errorMessage ?? 'No image')
             : Center(
                 key: const ValueKey('image_container'),
                 child: Image.memory(imageBytes!, fit: BoxFit.cover, width: double.infinity, height: double.infinity),
