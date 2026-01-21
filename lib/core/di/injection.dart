@@ -9,22 +9,31 @@ import '../../domain/services/color_extractor.dart';
 import '../../infrastructure/datasources/image_remote_datasource.dart';
 import '../../infrastructure/repositories/image_repository_impl.dart';
 import '../../infrastructure/services/color_extractor_impl.dart';
+import '../logger/logger.dart';
+import '../logger/logger_impl.dart';
 
 final getIt = GetIt.instance;
 
 void setupDependencies() {
   getIt
+    ..registerLazySingleton<Logger>(LoggerImpl.new)
     ..registerLazySingleton<http.Client>(http.Client.new)
     // Data sources
-    ..registerLazySingleton<ImageRemoteDataSource>(() => ImageRemoteDataSourceImpl(client: getIt<http.Client>()))
+    ..registerLazySingleton<ImageRemoteDataSource>(
+      () => ImageRemoteDataSourceImpl(client: getIt<http.Client>(), logger: getIt<Logger>()),
+    )
     // Services
     ..registerLazySingleton<BrightnessProvider>(PlatformBrightnessProvider.new)
     ..registerLazySingleton<ColorExtractor>(ColorExtractorImpl.new)
     // Repositories
     ..registerLazySingleton<ImageRepository>(
-      () => ImageRepositoryImpl(dataSource: getIt<ImageRemoteDataSource>(), colorExtractor: getIt<ColorExtractor>()),
+      () => ImageRepositoryImpl(
+        dataSource: getIt<ImageRemoteDataSource>(),
+        colorExtractor: getIt<ColorExtractor>(),
+        logger: getIt<Logger>(),
+      ),
     )
     // Cubits
-    ..registerFactory<ImageCubit>(() => ImageCubit(repository: getIt<ImageRepository>()))
+    ..registerFactory<ImageCubit>(() => ImageCubit(repository: getIt<ImageRepository>(), logger: getIt<Logger>()))
     ..registerFactory<ThemeCubit>(() => ThemeCubit(brightnessProvider: getIt<BrightnessProvider>()));
 }

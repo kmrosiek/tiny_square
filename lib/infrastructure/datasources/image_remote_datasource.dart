@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../../core/logger/logger.dart';
 import '../models/random_image_model.dart';
 
 abstract class ImageRemoteDataSource {
@@ -8,9 +9,10 @@ abstract class ImageRemoteDataSource {
 }
 
 class ImageRemoteDataSourceImpl implements ImageRemoteDataSource {
-  const ImageRemoteDataSourceImpl({required this.client});
+  const ImageRemoteDataSourceImpl({required this.client, required this.logger});
 
   final http.Client client;
+  final Logger logger;
 
   static const List<String> _urlList = [
     'https://fastly.picsum.photos/id/905/2048/2048.jpg?hmac=BnS9B46WuQAfAbZ2Q8u77RPJZb9fbDoRCsmt76T8G7Q',
@@ -26,26 +28,43 @@ class ImageRemoteDataSourceImpl implements ImageRemoteDataSource {
 
   @override
   Future<String> getImageUrl() async {
-    //final response = await client.get(Uri.parse('${ApiConstants.baseUrl}/image/'));
-    await Future<void>.delayed(const Duration(milliseconds: 100));
-    final response = http.Response('{"url": "${_urlList[_currentIndex++ % _urlList.length]}"}', 200);
+    logger.debug('Fetching image URL');
+    try {
+      //final response = await client.get(Uri.parse('${ApiConstants.baseUrl}/image/'));
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+      final response = http.Response('{"url": "${_urlList[_currentIndex++ % _urlList.length]}"}', 200);
 
-    if (response.statusCode != 200) {
-      throw Exception('Failed to load image URL: ${response.statusCode}');
+      if (response.statusCode != 200) {
+        logger.error('Failed to load image URL', Exception('Status code: ${response.statusCode}'));
+        throw Exception('Failed to load image URL: ${response.statusCode}');
+      }
+
+      final json = jsonDecode(response.body) as Map<String, dynamic>;
+      final url = json['url'] as String;
+      logger.info('Successfully fetched image URL: $url');
+      return url;
+    } catch (e, stackTrace) {
+      logger.error('Error fetching image URL', e, stackTrace);
+      rethrow;
     }
-
-    final json = jsonDecode(response.body) as Map<String, dynamic>;
-    return json['url'] as String;
   }
 
   @override
   Future<RandomImageModel> downloadImage(String url) async {
-    final imageResponse = await client.get(Uri.parse(url));
+    logger.debug('Downloading image from URL: $url');
+    try {
+      final imageResponse = await client.get(Uri.parse(url));
 
-    if (imageResponse.statusCode != 200) {
-      throw Exception('Failed to load image: ${imageResponse.statusCode}');
+      if (imageResponse.statusCode != 200) {
+        logger.error('Failed to load image', Exception('Status code: ${imageResponse.statusCode}'));
+        throw Exception('Failed to load image: ${imageResponse.statusCode}');
+      }
+
+      logger.info('Successfully downloaded image from URL: $url');
+      return RandomImageModel.fromBytes(imageResponse.bodyBytes);
+    } catch (e, stackTrace) {
+      logger.error('Error downloading image from URL: $url', e, stackTrace);
+      rethrow;
     }
-
-    return RandomImageModel.fromBytes(imageResponse.bodyBytes);
   }
 }
