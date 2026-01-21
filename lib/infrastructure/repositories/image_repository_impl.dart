@@ -24,9 +24,10 @@ class ImageRepositoryImpl implements ImageRepository {
   final ColorExtractor colorExtractor;
   final Logger logger;
   final Queue<RandomImage> _imageQueue = Queue();
-  final StreamController<RandomImage> _imageStreamController = StreamController<RandomImage>();
+  final StreamController<RandomImage> _imageStreamController = StreamController<RandomImage>.broadcast();
   bool _isInitializing = false;
   bool _isDisposed = false;
+  Failure? _lastFillQueueFailure;
 
   Future<RandomImage> _internalGetNextImage() async {
     // If queue has images, return the first one immediately
@@ -62,6 +63,9 @@ class ImageRepositoryImpl implements ImageRepository {
     logger.debug(
       '$_logTag: Filling image queue. Current size: ${_imageQueue.length}, Target: ${PrefetchConstants.urlBufferTarget}',
     );
+    // Clear previous failure when starting a new fill attempt
+    _lastFillQueueFailure = null;
+
     while (_imageQueue.length < PrefetchConstants.urlBufferTarget) {
       try {
         final url = await dataSource.getImageUrl();
@@ -82,7 +86,11 @@ class ImageRepositoryImpl implements ImageRepository {
         continue; // Continue loop to try another image
       } catch (e, stackTrace) {
         logger.warning('$_logTag: Failed to get image for queue, stopping refill', e, stackTrace);
-        // If we can't get images due to other reasons (network, etc.), break to avoid infinite loop
+        final failure = ServerFailure('Failed to fetch images: $e');
+        _lastFillQueueFailure = failure;
+        if (_imageStreamController.hasListener) {
+          _imageStreamController.addError(failure, stackTrace);
+        }
         break;
       }
     }
@@ -101,6 +109,12 @@ class ImageRepositoryImpl implements ImageRepository {
     if (_imageQueue.isEmpty && !_isInitializing) {
       logger.info('$_logTag: Queue is empty, initializing...');
       await _initializeQueue();
+
+      // Check again after initialization - if it failed and queue is still empty, return error
+      if (_imageQueue.isEmpty && _lastFillQueueFailure != null) {
+        logger.warning('$_logTag: Queue initialization failed, returning error');
+        return Left(_lastFillQueueFailure!);
+      }
     }
 
     try {
@@ -115,6 +129,8 @@ class ImageRepositoryImpl implements ImageRepository {
       }
 
       return Right(image);
+    } on Failure catch (e) {
+      return Left(e);
     } on SocketException catch (e, stackTrace) {
       logger.error('$_logTag: Network error while getting next image', e, stackTrace);
       return const Left(NetworkFailure('No internet connection'));
