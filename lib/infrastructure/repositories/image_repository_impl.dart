@@ -48,11 +48,14 @@ class ImageRepositoryImpl implements ImageRepository {
       logger.debug('$_logTag: Queue initialization already in progress');
       return;
     }
-    logger.debug('$_logTag: Initializing image queue');
     _isInitializing = true;
-    await _fillQueue();
-    _isInitializing = false;
-    logger.info('$_logTag: Image queue initialized with ${_imageQueue.length} images');
+    logger.debug('$_logTag: Initializing image queue');
+    try {
+      await _fillQueue();
+      logger.info('$_logTag: Image queue initialized with ${_imageQueue.length} images');
+    } finally {
+      _isInitializing = false;
+    }
   }
 
   Future<void> _fillQueue() async {
